@@ -1,0 +1,11 @@
+version: 0.1
+id: github_molecules_example
+type: FileSource
+description: FreeSolv molecule dataset from the Molecules_Dataset_Collection repository on GitHub
+docs_url: https://github.com/GLambard/Molecules_Dataset_Collection
+license: see LICENSE in the source repository
+
+download:
+  url: https://raw.githubusercontent.com/GLambard/Molecules_Dataset_Collection/master/latest/FreeSolv_SAMPL.csv
+  filename: FreeSolv_SAMPL.csv
+  sha256: 2c348c99c300762f92f133d784f5051ab00d0457f8b18ebc660e6d4d6dd61bb7

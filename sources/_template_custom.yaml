@@ -1,0 +1,105 @@
+# CUSTOM SOURCE TEMPLATE
+#
+# Files starting with "_" are ignored by --list and --all.
+# To add a source:
+#   1. cp sources/_template_custom.yaml sources/my_db.yaml
+#   2. fill in the fields below
+#   3. python -m src.fetch my_db --dry-run
+#   4. python -m src.fetch my_db
+#
+# A manifest can also be passed by path:
+#   python -m src.fetch sources/_template_custom.yaml --dry-run
+#
+# This layer is transport only: it describes how to reach the server and
+# stores the raw response. Field parsing (SMILES, IC50, CC50) is a separate
+# stage that reads the saved files from data/raw/<id>/.
+
+# Manifest format version.
+version: 0.1
+
+# Unique source id: letters, digits, dot, dash, underscore.
+# Used as the data/raw/ subdirectory and as the --list / --fetch key.
+id: my_source
+
+# DeclarativeSource — fetch data over HTTP.
+# FileSource        — download a single file from a direct URL.
+type: DeclarativeSource
+
+# Optional provenance fields, shown by --list and kept for reviewers.
+description: Custom data source
+docs_url: https://example.org/docs
+license: unknown
+
+# --- ACCESS --------------------------------------------------------------
+requester:
+  # HttpRequester performs one HTTP GET per page.
+  type: HttpRequester
+
+  # Base URL. Must be http:// or https://.
+  url_base: https://example.org/api/
+
+  # Endpoint path, joined to url_base with "/".
+  path: data/items.json
+
+  # Request method.
+  http_method: GET
+
+  # Constant query parameters.
+  request_parameters:
+    organism: Vaccinia virus
+    limit: "1000"
+
+  # HTTP headers required by the service. Never put secrets here.
+  headers:
+    Accept: application/json
+    User-Agent: vacv-qsar/0.1
+
+  # Authentication. The secret is always read from an environment variable.
+  # Options:
+  #   type: NoAuth
+  #   type: Bearer        env: MY_TOKEN
+  #   type: ApiKeyHeader  env: MY_KEY  header_name: X-API-Key  prefix: ""
+  #   type: ApiKeyQuery   env: MY_KEY  query_parameter: api_key
+  #   type: Basic         env: MY_BASIC  (value is "user:password")
+  authenticator:
+    type: NoAuth
+
+# --- PAGINATION ----------------------------------------------------------
+paginator:
+  # Options:
+  #   NoPagination      one request
+  #   OffsetIncrement   offset=0,1000,2000...
+  #   PageIncrement     page=1,2,3...
+  #   NextUrl           next page link is inside the JSON response
+  #
+  # OffsetIncrement: page_size, offset_parameter, limit_parameter
+  # PageIncrement:   page_parameter, start_page
+  # NextUrl:         next_url_path: $.page_meta.next
+  #
+  # max_pages is a hard safety limit.
+  # stop_when_empty is a JSON path to a list; an empty list ends pagination.
+  type: NoPagination
+  max_pages: 10
+
+# --- ERROR HANDLING ------------------------------------------------------
+error_handler:
+  type: DefaultErrorHandler
+  max_retries: 3
+  backoff_seconds: 2
+  retry_statuses: [429, 500, 502, 503, 504]
+  timeout_seconds: 30
+
+# --- OUTPUT --------------------------------------------------------------
+output:
+  # Page file extension: page-0001.<extension>
+  extension: json
+
+# --- FILE SOURCE ALTERNATIVE ---------------------------------------------
+# For a direct CSV/XLSX/ZIP link use type: FileSource and a download block
+# instead of requester/paginator/output:
+#
+# type: FileSource
+# download:
+#   url: https://example.org/vacv_table.csv
+#   filename: vacv_table.csv
+#   sha256: ""            # optional: 64 hex characters

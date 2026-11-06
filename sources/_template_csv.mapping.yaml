@@ -1,0 +1,36 @@
+# MAPPING TEMPLATE FOR A CSV SOURCE
+#
+# The output schema is the organizers' train.csv schema:
+#   Title, CC50_uM, IC50_uM_VACV, SI VACV, SMILES, strain, Culture
+# plus provenance columns doi and source.
+#
+# Provide EITHER a target column (SI) OR both ic50 and cc50 columns.
+# If both SI and IC50/CC50 are present, SI is used as the target.
+#
+# Copy this file, adjust column names, then run:
+#   python -m src.dataset --csv sources/my_lab.mapping.yaml
+
+id: lab_x
+file: data/raw/lab_x/table.csv
+
+# SMILES column (required).
+smiles: SMILES
+
+# Target column: selectivity index (required unless ic50+cc50 are given).
+target: SI VACV
+
+# Optional concentration columns in uM.
+# ic50: IC50_uM_VACV
+# cc50: CC50_uM
+
+# Units for ic50/cc50. Molar units convert directly; mass units need RDKit.
+units: uM
+
+# Optional metadata.
+# title: Title
+# cell_line: Culture
+# organism: strain
+# doi: DOI
+
+# Optional explicit relation column (>, <, =).
+# relation: Relation

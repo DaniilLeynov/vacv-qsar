@@ -1,0 +1,36 @@
+version: 0.1
+id: chembl_vacv
+type: DeclarativeSource
+description: Cell-based Vaccinia virus assays from the ChEMBL assay catalog
+docs_url: https://chembl.gitbook.io/chembl-interface-documentation/web-services
+license: CC BY-SA 4.0
+
+requester:
+  type: HttpRequester
+  url_base: https://www.ebi.ac.uk/chembl/api/data/
+  path: assay.json
+  http_method: GET
+  request_parameters:
+    description__icontains: vaccinia
+    assay_type: F
+    limit: "1000"
+  headers:
+    Accept: application/json
+    User-Agent: vacv-qsar/0.1
+  authenticator:
+    type: NoAuth
+
+paginator:
+  type: NextUrl
+  next_url_path: $.page_meta.next
+  max_pages: 10
+
+error_handler:
+  type: DefaultErrorHandler
+  max_retries: 2
+  backoff_seconds: 2
+  retry_statuses: [429, 500, 502, 503, 504]
+  timeout_seconds: 30
+
+output:
+  extension: json

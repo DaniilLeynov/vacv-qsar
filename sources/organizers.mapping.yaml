@@ -1,0 +1,12 @@
+# Organizers' train.csv is the canonical dataset format.
+id: organizers
+file: data/raw/organizers/train.csv
+
+smiles: SMILES
+title: Title
+target: SI VACV
+ic50: IC50_uM_VACV
+cc50: CC50_uM
+units: uM
+cell_line: Culture
+organism: strain

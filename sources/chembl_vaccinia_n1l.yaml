@@ -1,0 +1,35 @@
+version: 0.1
+id: chembl_vaccinia_n1l
+type: DeclarativeSource
+description: Vaccinia N1L protein binding IC50 (biochemical assay, not cell-based)
+docs_url: https://chembl.gitbook.io/chembl-interface-documentation/web-services
+license: CC BY-SA 4.0
+
+requester:
+  type: HttpRequester
+  url_base: https://www.ebi.ac.uk/chembl/api/data/
+  path: activity.json
+  http_method: GET
+  request_parameters:
+    target_organism: Vaccinia virus
+    standard_type__in: IC50,CC50
+  headers:
+    Accept: application/json
+    User-Agent: vacv-qsar/0.1
+  authenticator:
+    type: NoAuth
+
+paginator:
+  type: NextUrl
+  next_url_path: $.page_meta.next
+  max_pages: 20
+
+error_handler:
+  type: DefaultErrorHandler
+  max_retries: 2
+  backoff_seconds: 2
+  retry_statuses: [429, 500, 502, 503, 504]
+  timeout_seconds: 15
+
+output:
+  extension: json
