@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from .normalize.common import CENSORED_RELATIONS
 from .sources.base import (
     SourceAdapter,
     SourceError,
@@ -41,6 +42,12 @@ def build(adapters: list[SourceAdapter], raw_dir: Path) -> tuple[pd.DataFrame, p
     parsed = measurements.copy()
     parsed["dropped_reason"] = parsed["dropped_reason"].fillna("").astype(str)
 
+    relations = parsed["relation"].fillna("=").astype(str)
+    censored = relations.isin(CENSORED_RELATIONS)
+    parsed.loc[censored & (parsed["dropped_reason"] == ""), "dropped_reason"] = (
+        "censored measurement"
+    )
+
     numeric = pd.to_numeric(parsed["value_um"], errors="coerce")
     invalid_value = numeric.notna() & (numeric < 0)
     invalid_value |= (parsed["type"] != "si") & numeric.notna() & (numeric == 0)
@@ -48,11 +55,17 @@ def build(adapters: list[SourceAdapter], raw_dir: Path) -> tuple[pd.DataFrame, p
     unconverted = numeric.isna() & (parsed["dropped_reason"] == "")
     parsed.loc[unconverted, "dropped_reason"] = "value could not be converted"
 
-    dropped_measurements = parsed[parsed["dropped_reason"] != ""].copy()
+    parsed_dropped = parsed[parsed["dropped_reason"] != ""].copy()
+    parsed_dropped = parsed_dropped.assign(stage="parse")
 
-    dataset = build_dataset(parsed)
+    dataset, unpaired = build_dataset(parsed)
+    pair_dropped = unpaired.rename(columns={"reason": "dropped_reason"})
+    pair_dropped = pair_dropped.assign(stage="pair")
+
+    dropped = pd.concat([parsed_dropped, pair_dropped], ignore_index=True)
+
     valid, problems = validate_dataset(dataset)
-    return valid, dropped_measurements, problems
+    return valid, dropped, problems
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -114,17 +127,7 @@ def main(argv: list[str] | None = None) -> int:
 
     dropped_frames = []
     if not dropped_measurements.empty:
-        columns = [
-            "source",
-            "source_id",
-            "type",
-            "measure",
-            "value",
-            "units",
-            "relation",
-            "dropped_reason",
-        ]
-        dropped_frames.append(dropped_measurements[columns].assign(stage="parse"))
+        dropped_frames.append(dropped_measurements)
     if not problems.empty:
         dropped_frames.append(
             problems.rename(

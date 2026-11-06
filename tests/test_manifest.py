@@ -192,3 +192,9 @@ def test_custom_template_is_valid():
     template = load_manifest(REPO / "sources" / "_template_custom.yaml")
     assert template.id == "my_source"
     assert template.type == "DeclarativeSource"
+
+
+def test_unsafe_manifest_ids_are_rejected():
+    for bad in (".", "..", "..."):
+        with pytest.raises(ManifestError, match="safe directory"):
+            parse_manifest(declarative(id=bad))

@@ -25,6 +25,15 @@ MEASUREMENT_COLUMNS = [
 ]
 
 # Canonical format: identical to the organizers' train.csv plus provenance.
+UNPAIRED_COLUMNS = [
+    "source",
+    "source_id",
+    "type",
+    "cell_line",
+    "doi",
+    "reason",
+]
+
 DATASET_COLUMNS = [
     "Title",
     "CC50_uM",
@@ -92,9 +101,14 @@ def _cell_key(frame: pd.DataFrame) -> pd.Series:
     return frame["cell_line"].fillna("").astype(str).str.strip().str.lower()
 
 
-def build_dataset(measurements: pd.DataFrame) -> pd.DataFrame:
+def build_dataset(
+    measurements: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     if measurements.empty:
-        return pd.DataFrame(columns=DATASET_COLUMNS)
+        return (
+            pd.DataFrame(columns=DATASET_COLUMNS),
+            pd.DataFrame(columns=UNPAIRED_COLUMNS),
+        )
 
     frame = measurements.copy()
     for column in MEASUREMENT_COLUMNS:
@@ -110,6 +124,7 @@ def build_dataset(measurements: pd.DataFrame) -> pd.DataFrame:
     frame["cell_key"] = _cell_key(frame)
 
     rows: list[dict] = []
+    unpaired: list[dict] = []
     for (source, source_id), group in frame.groupby(
         ["source", "source_id"], sort=False
     ):
@@ -127,6 +142,18 @@ def build_dataset(measurements: pd.DataFrame) -> pd.DataFrame:
             elif ic50 is not None and cc50 is not None:
                 si_value = selectivity_index(ic50["value_um"], cc50["value_um"])
             else:
+                present = ic50 or cc50
+                missing = "CC50" if ic50 is not None else "IC50"
+                unpaired.append(
+                    {
+                        "source": source,
+                        "source_id": source_id,
+                        "type": "ic50" if ic50 is not None else "cc50",
+                        "cell_line": present["cell_line"],
+                        "doi": present["doi"],
+                        "reason": f"no matching {missing} on the same cell line",
+                    }
+                )
                 continue
             if si_value is None:
                 continue
@@ -146,9 +173,8 @@ def build_dataset(measurements: pd.DataFrame) -> pd.DataFrame:
                 }
             )
 
-    if not rows:
-        return pd.DataFrame(columns=DATASET_COLUMNS)
-    return pd.DataFrame(rows, columns=DATASET_COLUMNS)
+    dataset = pd.DataFrame(rows, columns=DATASET_COLUMNS)
+    return dataset, pd.DataFrame(unpaired, columns=UNPAIRED_COLUMNS)
 
 
 def _first_of(records: list[dict], key: str) -> str:

@@ -70,7 +70,7 @@ def test_load_and_build_dataset(tmp_path):
     assert set(measurements["cell_line"]) == {"CV-1"}
     assert "percent is not a concentration" in set(measurements["dropped_reason"])
 
-    dataset = build_dataset(measurements)
+    dataset, _ = build_dataset(measurements)
     assert len(dataset) == 2
 
     by_title = dataset.set_index("Title")
@@ -98,7 +98,7 @@ def test_mass_units_use_molecular_weight(tmp_path, monkeypatch):
 
     monkeypatch.setattr("src.sources.chembl.molecular_weight", lambda smiles: 100.0)
     source = ChemblSource(db)
-    dataset = build_dataset(source.load(tmp_path))
+    dataset, _ = build_dataset(source.load(tmp_path))
     row = dataset.set_index("Title").loc["M3"]
     assert row["IC50_uM_VACV"] == pytest.approx(50.0)
     assert row["CC50_uM"] == pytest.approx(500.0)

@@ -41,7 +41,7 @@ def write_source(tmp_path: Path) -> Path:
 
 def test_csv_source_builds_dataset(tmp_path):
     source = CsvSource.from_config(write_source(tmp_path))
-    dataset = build_dataset(source.load(tmp_path))
+    dataset, _ = build_dataset(source.load(tmp_path))
 
     assert len(dataset) == 2
     by_title = dataset.set_index("Title")
@@ -93,7 +93,7 @@ def test_target_only_source(tmp_path):
         encoding="utf-8",
     )
     source = CsvSource.from_config(mapping)
-    dataset = build_dataset(source.load(tmp_path))
+    dataset, _ = build_dataset(source.load(tmp_path))
 
     by_title = dataset.set_index("Title")
     assert by_title.loc["A", "SI VACV"] == pytest.approx(10.0)
@@ -128,7 +128,7 @@ def test_bad_row_does_not_drop_other_rows_with_the_same_title():
         ],
         columns=MEASUREMENT_COLUMNS,
     )
-    dataset = build_dataset(measurements)
+    dataset, _ = build_dataset(measurements)
     valid, problems = validate_dataset(dataset)
 
     assert len(dataset) == 2

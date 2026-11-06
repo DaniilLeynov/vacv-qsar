@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 VALID_RELATIONS = {"=", ">", "<", ">=", "<=", "~"}
+CENSORED_RELATIONS = {">", "<", ">=", "<=", "~"}
 EXACT_RELATIONS = {"="}
 
 _MOLAR_TO_UM = {

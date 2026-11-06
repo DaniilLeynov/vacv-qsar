@@ -260,3 +260,11 @@ def test_manifest_change_invalidates_cache(tmp_path):
     assert result.skipped is False
     assert len(fake.calls) == 1
     assert "offset=0" in fake.calls[0]
+
+
+def test_contained_path_blocks_escape(tmp_path):
+    from src.fetch.engine import contained_path
+
+    inside = contained_path(tmp_path, "source/page.json")
+    assert inside == (tmp_path / "source" / "page.json").resolve()
+    assert contained_path(tmp_path, "../escape.json") is None

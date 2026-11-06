@@ -29,6 +29,16 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def contained_path(base: Path, relative: str) -> Path | None:
+    root = base.resolve()
+    target = (root / relative).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError:
+        return None
+    return target
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -65,8 +75,8 @@ def _save_run(out_dir: Path, source_id: str, records: list[dict]) -> None:
     for record in previous:
         name = record.get("file")
         if name and name not in new_files:
-            stale = out_dir / name
-            if stale.exists():
+            stale = contained_path(out_dir, name)
+            if stale is not None and stale.exists():
                 stale.unlink()
 
     _write_records(out_dir, others + records)
@@ -82,8 +92,8 @@ def _is_cached(out_dir: Path, source_id: str, fingerprint: str) -> bool:
     if not records:
         return False
     for record in records:
-        path = out_dir / record.get("file", "")
-        if not path.exists():
+        path = contained_path(out_dir, record.get("file", ""))
+        if path is None or not path.exists():
             return False
         if sha256_bytes(path.read_bytes()) != record.get("sha256"):
             return False
@@ -145,7 +155,9 @@ def _fetch_file(
         )
 
     relative_path = f"{manifest.id}/{downloaded.filename}"
-    target = out_dir / relative_path
+    target = contained_path(out_dir, relative_path)
+    if target is None:
+        raise FetchError(f"{manifest.id}: refusing to write outside {out_dir}")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(response.content)
     _save_run(
@@ -223,7 +235,9 @@ def fetch_source(
     for page in range(1, paginator_config.max_pages + 1):
         response = http_get_fn(url, headers, handler, **retry_kwargs)
         relative_path = f"{manifest.id}/page-{page:04d}.{extension}"
-        target = out_dir / relative_path
+        target = contained_path(out_dir, relative_path)
+        if target is None:
+            raise FetchError(f"{manifest.id}: refusing to write outside {out_dir}")
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(response.content)
 

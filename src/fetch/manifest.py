@@ -411,6 +411,8 @@ def parse_manifest(data: dict, where: str = "manifest") -> Manifest:
     manifest_id = _str(data, "id", where)
     if not ID_RE.match(manifest_id):
         _fail(f"{where}.id: allowed characters are letters, digits, dot, dash and underscore")
+    if manifest_id in {".", ".."} or set(manifest_id) == {"."}:
+        _fail(f"{where}.id: {manifest_id!r} is not a safe directory name")
 
     source_type = _str(data, "type", where)
     if source_type not in SOURCE_TYPES:

@@ -152,3 +152,43 @@ def test_cli_chembl_flag_uses_download(monkeypatch, tmp_path):
     frame = pd.read_csv(out)
     assert len(frame) == 1
     assert frame.loc[0, "SI VACV"] == 10.0
+
+
+def write_simple_source(tmp_path, rows):
+    (tmp_path / "table.csv").write_text(rows, encoding="utf-8")
+    mapping = tmp_path / "lab.mapping.yaml"
+    mapping.write_text(
+        "\n".join(
+            [
+                "id: lab",
+                f"file: {tmp_path / 'table.csv'}",
+                "smiles: SMILES",
+                "ic50: IC50_uM",
+                "cc50: CC50_uM",
+                "units: uM",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return CsvSource.from_config(mapping)
+
+
+def test_censored_measurement_is_dropped(tmp_path):
+    source = write_simple_source(
+        tmp_path, "SMILES,IC50_uM,CC50_uM\nCCO,>50,100\n"
+    )
+    dataset, dropped, problems = build([source], tmp_path)
+
+    assert dataset.empty
+    assert "censored measurement" in set(dropped["dropped_reason"])
+    assert problems.empty
+
+
+def test_unpaired_measurement_is_reported(tmp_path):
+    source = write_simple_source(tmp_path, "SMILES,IC50_uM,CC50_uM\nCCO,10,\n")
+    dataset, dropped, problems = build([source], tmp_path)
+
+    assert dataset.empty
+    reasons = " ".join(dropped["dropped_reason"].astype(str))
+    assert "no matching CC50 on the same cell line" in reasons
+    assert problems.empty
