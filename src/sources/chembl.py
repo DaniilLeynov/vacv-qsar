@@ -66,7 +66,7 @@ SELECT p.molregno,
        p.organism,
        p.study_id,
        p.doi,
-       md.molecule_chembl_id,
+       md.chembl_id,
        cs.canonical_smiles
 FROM (SELECT * FROM potency UNION ALL SELECT * FROM cytotox) p
 JOIN molecule_dictionary md ON md.molregno = p.molregno

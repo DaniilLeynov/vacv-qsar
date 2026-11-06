@@ -12,7 +12,7 @@ CREATE TABLE assays (assay_id INTEGER, cell_id INTEGER, assay_organism TEXT,
 CREATE TABLE activities (assay_id INTEGER, molregno INTEGER, doc_id INTEGER,
                          standard_type TEXT, standard_value REAL,
                          standard_units TEXT, standard_relation TEXT);
-CREATE TABLE molecule_dictionary (molregno INTEGER, molecule_chembl_id TEXT);
+CREATE TABLE molecule_dictionary (molregno INTEGER, chembl_id TEXT);
 CREATE TABLE compound_structures (molregno INTEGER, canonical_smiles TEXT);
 CREATE TABLE cell_dictionary (cell_id INTEGER, cell_name TEXT);
 CREATE TABLE docs (doc_id INTEGER, doi TEXT);
