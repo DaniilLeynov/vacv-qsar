@@ -1,6 +1,6 @@
 # Organizers' train.csv is the canonical dataset format.
 id: organizers
-file: data/raw/organizers/train.csv
+file: data/organizers/train.csv
 
 smiles: SMILES
 title: Title
