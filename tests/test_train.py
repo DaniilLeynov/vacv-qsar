@@ -44,6 +44,8 @@ def test_train_smoke(tmp_path):
             "5",
             "--jobs",
             "1",
+            "--mode",
+            "reg",
         ]
     )
 

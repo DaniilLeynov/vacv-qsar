@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import numpy as np
-from rdkit import Chem
+from rdkit import Chem, DataStructs
 from rdkit.Chem import Descriptors, Lipinski, rdFingerprintGenerator, rdMolDescriptors
 
 FP_SIZE = 2048
 FP_RADIUS = 2
+MACCS_SIZE = 167
 
 DESCRIPTORS = [
     ("MolWt", Descriptors.MolWt),
@@ -19,9 +20,11 @@ DESCRIPTORS = [
     ("FractionCSP3", rdMolDescriptors.CalcFractionCSP3),
 ]
 
-FEATURE_NAMES = [f"morgan_{index}" for index in range(FP_SIZE)] + [
-    name for name, _ in DESCRIPTORS
-]
+FEATURE_NAMES = (
+    [f"morgan_{index}" for index in range(FP_SIZE)]
+    + [f"maccs_{index}" for index in range(MACCS_SIZE)]
+    + [name for name, _ in DESCRIPTORS]
+)
 
 _GENERATOR = rdFingerprintGenerator.GetMorganGenerator(
     radius=FP_RADIUS, fpSize=FP_SIZE
@@ -38,9 +41,18 @@ def featurize(smiles: str) -> np.ndarray:
     molecule = Chem.MolFromSmiles(smiles)
     if molecule is None:
         raise FeatureError(f"invalid SMILES: {smiles!r}")
+
     fingerprint = _GENERATOR.GetCountFingerprintAsNumPy(molecule).astype(np.float32)
-    values = np.array([function(molecule) for _, function in DESCRIPTORS], dtype=np.float32)
-    return np.concatenate([fingerprint, values])
+
+    maccs = np.zeros((MACCS_SIZE,), dtype=np.int32)
+    DataStructs.ConvertToNumpyArray(
+        rdMolDescriptors.GetMACCSKeysFingerprint(molecule), maccs
+    )
+
+    values = np.array(
+        [function(molecule) for _, function in DESCRIPTORS], dtype=np.float32
+    )
+    return np.concatenate([fingerprint, maccs.astype(np.float32), values])
 
 
 def build_matrix(smiles: list[str]) -> tuple[np.ndarray, list[int], list[dict]]:

@@ -10,18 +10,17 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from catboost import CatBoostRegressor
+from catboost import CatBoostClassifier, CatBoostRegressor
 
 from .features import build_matrix
-from .split import make_splits
+from .split import make_splits, scaffold_of
 
 DEFAULT_DATA = Path("data/dataset.csv")
 DEFAULT_OUT = Path("runs/catboost")
+SI_CAP = 10000.0
 
 
-def load_dataset(
-    path: Path, include_capped: bool, target: str
-) -> pd.DataFrame:
+def load_dataset(path: Path, target: str) -> pd.DataFrame:
     frame = pd.read_csv(path)
     frame = frame[frame["SMILES"].notna()].copy()
     frame["SI VACV"] = pd.to_numeric(frame["SI VACV"], errors="coerce")
@@ -29,11 +28,9 @@ def load_dataset(
 
     lower = pd.to_numeric(frame.get("SI_lower", frame["SI VACV"]), errors="coerce")
     upper = pd.to_numeric(frame.get("SI_upper", frame["SI VACV"]), errors="coerce")
-    exact = lower.notna() & upper.notna() & np.isclose(lower, upper)
-    if not include_capped:
-        frame = frame[exact].copy()
-
+    frame["is_capped"] = (lower != upper).fillna(False)
     frame = frame.reset_index(drop=True)
+
     frame["target"] = (
         np.log1p(frame["SI VACV"]) if target == "log1p" else frame["SI VACV"]
     )
@@ -47,45 +44,139 @@ def inverse_target(values: np.ndarray, target: str) -> np.ndarray:
     return np.clip(values, 0.0, None)
 
 
-def regression_metrics(
-    y_si: np.ndarray, pred_si: np.ndarray, target: str
-) -> dict:
+def regression_metrics(y_si: np.ndarray, pred_si: np.ndarray) -> dict:
     y_si = np.asarray(y_si, dtype=np.float64)
     pred_si = np.asarray(pred_si, dtype=np.float64)
-    mse_si = float(np.mean((pred_si - y_si) ** 2))
-    mae_si = float(np.mean(np.abs(pred_si - y_si)))
+    mse = float(np.mean((pred_si - y_si) ** 2))
+    mae = float(np.mean(np.abs(pred_si - y_si)))
     y_log = np.log1p(y_si)
     pred_log = np.log1p(pred_si)
     mse_log = float(np.mean((pred_log - y_log) ** 2))
     return {
-        "mse_si": mse_si,
-        "rmse_si": math.sqrt(mse_si),
-        "mae_si": mae_si,
+        "mse_si": mse,
+        "rmse_si": math.sqrt(mse),
+        "mae_si": mae,
         "mse_log": mse_log,
         "rmse_log": math.sqrt(mse_log),
     }
 
 
-def _train_fold(payload: tuple) -> tuple[np.ndarray, int]:
+def _classifier_params(seed: int, iterations: int) -> dict:
+    return {
+        "loss_function": "Logloss",
+        "iterations": iterations,
+        "depth": 4,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 5.0,
+        "random_seed": seed,
+        "od_type": "Iter",
+        "od_wait": 50,
+        "allow_writing_files": False,
+        "verbose": False,
+    }
+
+
+def _regressor_params(seed: int, iterations: int, depth: int, lr: float, l2: float) -> dict:
+    return {
+        "loss_function": "RMSE",
+        "iterations": iterations,
+        "depth": depth,
+        "learning_rate": lr,
+        "l2_leaf_reg": l2,
+        "random_seed": seed,
+        "od_type": "Iter",
+        "od_wait": 100,
+        "allow_writing_files": False,
+        "verbose": False,
+    }
+
+
+def _train_two_stage_fold(payload: tuple) -> tuple[np.ndarray, np.ndarray]:
     (
-        x_train,
-        y_train,
-        x_valid,
-        y_valid,
-        params,
-        model_path,
+        x_num,
+        sc,
+        tr,
+        va,
+        y_si,
+        is_capped,
+        exact,
+        cls_params,
+        reg_params,
         thread_count,
+        cls_path,
+        reg_path,
+        use_scaffold,
     ) = payload
-    model = CatBoostRegressor(**params, thread_count=thread_count)
-    model.fit(
+
+    def frame(indices):
+        if use_scaffold:
+            data = pd.DataFrame(x_num[indices])
+            data["sc"] = sc[indices]
+            return data, ["sc"]
+        return x_num[indices], []
+
+    x_train, cat = frame(tr)
+    x_valid, _ = frame(va)
+
+    clf = CatBoostClassifier(**cls_params, thread_count=thread_count)
+    clf.fit(
         x_train,
-        y_train,
-        eval_set=(x_valid, y_valid),
+        is_capped[tr],
+        eval_set=(x_valid, is_capped[va]),
+        cat_features=cat,
         use_best_model=True,
-        verbose=False,
     )
-    model.save_model(model_path)
-    return model.predict(x_valid), int(model.get_best_iteration())
+    clf.save_model(cls_path)
+    p_valid = clf.predict_proba(x_valid)[:, 1]
+
+    tr_exact = tr & exact
+    va_exact = va & exact
+    x_train_e, _ = frame(tr_exact)
+    x_valid_e, _ = frame(va_exact)
+
+    reg = CatBoostRegressor(**reg_params, thread_count=thread_count)
+    reg.fit(
+        x_train_e,
+        y_si[tr_exact],
+        eval_set=(x_valid_e, y_si[va_exact]),
+        cat_features=cat,
+        use_best_model=True,
+    )
+    reg.save_model(reg_path)
+    re_valid = reg.predict(x_valid)
+
+    return p_valid, re_valid
+
+
+def _train_reg_fold(payload: tuple) -> np.ndarray:
+    (
+        x_num,
+        sc,
+        tr,
+        va,
+        y_target,
+        reg_params,
+        thread_count,
+        reg_path,
+        use_scaffold,
+    ) = payload
+    if use_scaffold:
+        x_train = pd.DataFrame(x_num[tr]); x_train["sc"] = sc[tr]
+        x_valid = pd.DataFrame(x_num[va]); x_valid["sc"] = sc[va]
+        cat = ["sc"]
+    else:
+        x_train, x_valid, cat = x_num[tr], x_num[va], []
+
+    reg = CatBoostRegressor(**reg_params, thread_count=thread_count)
+    reg.fit(
+        x_train,
+        y_target[tr],
+        eval_set=(x_valid, y_target[va]),
+        cat_features=cat,
+        use_best_model=True,
+    )
+    reg.save_model(reg_path)
+    return reg.predict(x_valid)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -98,17 +189,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
-        "--group", choices=["scaffold", "smiles"], default="scaffold"
+        "--group", choices=["scaffold", "smiles"], default="smiles"
     )
+    parser.add_argument("--target", choices=["log1p", "raw"], default="raw")
     parser.add_argument(
-        "--target", choices=["log1p", "raw"], default="log1p"
+        "--mode", choices=["twostage", "reg"], default="twostage"
     )
-    parser.add_argument(
-        "--include-capped",
-        action="store_true",
-        help="include rows whose SI is a lower bound (SI VACV = 10000)",
-    )
+    parser.add_argument("--blend-c", type=float, default=SI_CAP)
+    parser.add_argument("--use-scaffold", action="store_true")
     parser.add_argument("--iterations", type=int, default=2000)
+    parser.add_argument("--classifier-iterations", type=int, default=3000)
     parser.add_argument("--depth", type=int, default=6)
     parser.add_argument("--learning-rate", type=float, default=0.05)
     parser.add_argument("--l2-leaf-reg", type=float, default=3.0)
@@ -126,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     args.out.mkdir(parents=True, exist_ok=True)
 
-    frame = load_dataset(args.data, args.include_capped, args.target)
+    frame = load_dataset(args.data, args.target)
     matrix, valid, errors = build_matrix(frame["SMILES"].tolist())
     if errors:
         print(f"skipped invalid SMILES: {len(errors)}", file=sys.stderr)
@@ -135,71 +225,102 @@ def main(argv: list[str] | None = None) -> int:
         print("not enough valid rows for cross-validation", file=sys.stderr)
         return 1
 
+    sc = frame["SMILES"].map(scaffold_of).to_numpy()
+
     folds = make_splits(
-        frame,
-        n_splits=args.folds,
-        seed=args.seed,
-        strategy=args.group,
-    )
-    y = frame["target"].to_numpy(dtype=np.float64)
+        frame, n_splits=args.folds, seed=args.seed, strategy=args.group
+    ).to_numpy()
     y_si = frame["SI VACV"].to_numpy(dtype=np.float64)
+    y_target = frame["target"].to_numpy(dtype=np.float64)
+    is_capped = frame["is_capped"].to_numpy(dtype=np.int32)
+    exact = (is_capped == 0).astype(bool)
 
     cpu = os.cpu_count() or 1
     jobs = args.jobs or min(args.folds, cpu)
     jobs = max(1, min(jobs, args.folds))
     thread_count = max(1, cpu // jobs)
 
-    params = {
-        "loss_function": "RMSE",
-        "eval_metric": "RMSE",
-        "iterations": args.iterations,
-        "depth": args.depth,
-        "learning_rate": args.learning_rate,
-        "l2_leaf_reg": args.l2_leaf_reg,
-        "random_seed": args.seed,
-        "od_type": "Iter",
-        "od_wait": args.od_wait,
-        "allow_writing_files": False,
-        "verbose": False,
-    }
+    oof_p = np.zeros(len(frame))
+    oof_re = np.zeros(len(frame))
+    oof_reg = np.zeros(len(frame))
 
-    payloads = []
-    for fold in range(args.folds):
-        train_mask = folds.to_numpy() != fold
-        valid_mask = ~train_mask
-        payloads.append(
-            (
-                matrix[train_mask],
-                y[train_mask],
-                matrix[valid_mask],
-                y[valid_mask],
-                params,
-                str(args.out / f"model_fold{fold}.cbm"),
-                thread_count,
-            )
+    if args.mode == "twostage":
+        cls_params = _classifier_params(args.seed, args.classifier_iterations)
+        reg_params = _regressor_params(
+            args.seed, args.iterations, args.depth, args.learning_rate, args.l2_leaf_reg
         )
-
-    if jobs == 1:
-        results = [_train_fold(payload) for payload in payloads]
+        payloads = [
+            (
+                matrix,
+                sc,
+                folds != fold,
+                folds == fold,
+                y_si,
+                is_capped,
+                exact,
+                cls_params,
+                reg_params,
+                thread_count,
+                str(args.out / f"classifier_fold{fold}.cbm"),
+                str(args.out / f"regressor_fold{fold}.cbm"),
+                args.use_scaffold,
+            )
+            for fold in range(args.folds)
+        ]
+        if jobs == 1:
+            results = [_train_two_stage_fold(payload) for payload in payloads]
+        else:
+            with ProcessPoolExecutor(max_workers=jobs) as pool:
+                results = list(pool.map(_train_two_stage_fold, payloads))
+        for fold, (p_valid, re_valid) in enumerate(results):
+            mask = folds == fold
+            oof_p[mask] = p_valid
+            oof_re[mask] = re_valid
     else:
-        with ProcessPoolExecutor(max_workers=jobs) as pool:
-            results = list(pool.map(_train_fold, payloads))
+        reg_params = _regressor_params(
+            args.seed, args.iterations, args.depth, args.learning_rate, args.l2_leaf_reg
+        )
+        payloads = [
+            (
+                matrix,
+                sc,
+                folds != fold,
+                folds == fold,
+                y_target,
+                reg_params,
+                thread_count,
+                str(args.out / f"model_fold{fold}.cbm"),
+                args.use_scaffold,
+            )
+            for fold in range(args.folds)
+        ]
+        if jobs == 1:
+            results = [_train_reg_fold(payload) for payload in payloads]
+        else:
+            with ProcessPoolExecutor(max_workers=jobs) as pool:
+                results = list(pool.map(_train_reg_fold, payloads))
+        for fold, predictions in enumerate(results):
+            oof_reg[folds == fold] = predictions
 
-    oof = np.zeros(len(frame), dtype=np.float64)
-    best_iterations = []
-    for fold, (predictions, best_iteration) in enumerate(results):
-        oof[folds.to_numpy() == fold] = predictions
-        best_iterations.append(best_iteration)
+    if args.mode == "twostage":
+        pred_si = inverse_target(
+            oof_p * args.blend_c + (1 - oof_p) * oof_re, "raw"
+        )
+    else:
+        pred_si = inverse_target(oof_reg, args.target)
 
-    pred_si = inverse_target(oof, args.target)
-    metrics = regression_metrics(y_si, pred_si, args.target)
+    metrics = regression_metrics(y_si, pred_si)
+    capped_mask = is_capped == 1
+    exact_mask = is_capped == 0
+    per_group = {
+        "capped": regression_metrics(y_si[capped_mask], pred_si[capped_mask]),
+        "exact": regression_metrics(y_si[exact_mask], pred_si[exact_mask]),
+    } if args.mode == "twostage" else {}
 
-    dummy = np.zeros(len(frame), dtype=np.float64)
+    dummy = np.zeros(len(frame))
     for fold in range(args.folds):
-        train_mask = folds.to_numpy() != fold
-        dummy[~train_mask] = np.median(y[train_mask])
-    dummy_si = inverse_target(dummy, args.target)
-    dummy_metrics = regression_metrics(y_si, dummy_si, args.target)
+        dummy[folds == fold] = np.median(y_target[folds != fold])
+    dummy_metrics = regression_metrics(y_si, inverse_target(dummy, args.target))
 
     report = {
         "data": str(args.data),
@@ -208,12 +329,14 @@ def main(argv: list[str] | None = None) -> int:
         "seed": args.seed,
         "group": args.group,
         "target": args.target,
-        "include_capped": bool(args.include_capped),
+        "mode": args.mode,
+        "blend_c": args.blend_c,
+        "use_scaffold": bool(args.use_scaffold),
         "jobs": jobs,
         "thread_count": thread_count,
-        "best_iterations": best_iterations,
         "catboost": metrics,
         "dummy": dummy_metrics,
+        "per_group": per_group,
     }
     (args.out / "metrics.json").write_text(
         json.dumps(report, indent=2), encoding="utf-8"
@@ -224,13 +347,14 @@ def main(argv: list[str] | None = None) -> int:
             "SMILES": frame["SMILES"],
             "fold": folds,
             "y_si": y_si,
+            "is_capped": is_capped,
             "pred_si": pred_si,
         }
     ).to_csv(args.out / "oof.csv", index=False)
 
     print(
         f"rows={len(frame)} folds={args.folds} jobs={jobs} "
-        f"threads/fold={thread_count} target={args.target}"
+        f"threads/fold={thread_count} mode={args.mode}"
     )
     print(
         "CatBoost OOF  "
@@ -244,7 +368,14 @@ def main(argv: list[str] | None = None) -> int:
         f"MSE(SI)={dummy_metrics['mse_si']:,.1f}  "
         f"RMSE(SI)={dummy_metrics['rmse_si']:,.1f}"
     )
-    print(f"best iterations: {best_iterations}")
+    if per_group:
+        print(
+            "capped   MSE(SI)=%s  exact MSE(SI)=%s"
+            % (
+                f"{per_group['capped']['mse_si']:,.1f}",
+                f"{per_group['exact']['mse_si']:,.1f}",
+            )
+        )
     return 0
 
 

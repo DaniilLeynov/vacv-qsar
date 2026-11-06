@@ -30,7 +30,7 @@ fetch:
 	$(PY) -m src.fetch --all --out $(OUT)
 
 train:
-	$(PY) -m src.train --data data/dataset.csv --out $(TRAIN_OUT) --target raw --include-capped
+	$(PY) -m src.train --data data/dataset.csv --out $(TRAIN_OUT) --use-scaffold
 
 submit: train
 	$(PY) -m src.predict --test data/organizers/test.csv --model $(TRAIN_OUT) --out submissions/submission.csv
