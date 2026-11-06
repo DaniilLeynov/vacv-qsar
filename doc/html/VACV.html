@@ -1,0 +1,922 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Хакатон VACV</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<noscript><style>#v-digest,#v-roles{display:block !important}.nav-digest,.nav-roles{display:flex !important}</style></noscript>
+<style>
+/* Layout: Apple-style long page. Full-width alternating bands, 980px content column, sticky translucent nav, large type, generous space. */
+:root {
+  --bg: #fbfbfd;
+  --bg2: #f5f5f7;
+  --card: #ffffff;
+  --fg: #1d1d1f;
+  --fg2: #6e6e73;
+  --line: rgba(0, 0, 0, 0.1);
+  --accent: #00695c;
+  --accent-fill: #0b7a6b;
+  --accent-fg: #ffffff;
+  --code-bg: #f5f5f7;
+  --nav-bg: rgba(251, 251, 253, 0.8);
+  --cam-a: #0071e3;
+  --cam-b: #bf5af2;
+  --cam-c: #ff9f0a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 30px rgba(0, 0, 0, 0.05);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000;
+    --bg2: #101012;
+    --card: #1c1c1e;
+    --fg: #f5f5f7;
+    --fg2: #a1a1a6;
+    --line: rgba(255, 255, 255, 0.14);
+    --accent: #4fd1be;
+    --accent-fill: #4fd1be;
+    --accent-fg: #03201b;
+    --code-bg: #0b0b0c;
+    --nav-bg: rgba(0, 0, 0, 0.72);
+    --cam-a: #0a84ff;
+    --cam-b: #bf5af2;
+    --cam-c: #ff9f0a;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --bg2: #101012;
+  --card: #1c1c1e;
+  --fg: #f5f5f7;
+  --fg2: #a1a1a6;
+  --line: rgba(255, 255, 255, 0.14);
+  --accent: #4fd1be;
+  --accent-fill: #4fd1be;
+    --accent-fg: #03201b;
+  --code-bg: #0b0b0c;
+  --nav-bg: rgba(0, 0, 0, 0.72);
+  --cam-a: #0a84ff;
+  --cam-b: #bf5af2;
+  --cam-c: #ff9f0a;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.47;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent-fill); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: 88px; }
+.band.alt { background: var(--bg2); }
+
+/* nav */
+.nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--line);
+}
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 48px; }
+.nav strong { font-size: 15px; font-weight: 600; white-space: nowrap; letter-spacing: -0.01em; }
+.nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav ul::-webkit-scrollbar { display: none; }
+.nav a { color: var(--fg2); font-size: 13px; white-space: nowrap; }
+.nav a:hover { color: var(--fg); text-decoration: none; }
+
+/* type */
+.eyebrow { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg2); }
+.h-xl { font-size: clamp(42px, 9vw, 88px); line-height: 1.04; font-weight: 700; letter-spacing: -0.035em; }
+.h-lg { font-size: clamp(30px, 5.4vw, 52px); line-height: 1.08; font-weight: 700; letter-spacing: -0.028em; }
+.h-md { font-size: 21px; line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; }
+.lead { font-size: clamp(19px, 2.6vw, 24px); line-height: 1.38; color: var(--fg2); letter-spacing: -0.01em; max-width: 34em; }
+.muted { color: var(--fg2); }
+.sec-head { display: grid; gap: 14px; margin-bottom: 48px; }
+
+/* hero */
+.hero { padding-top: 72px; padding-bottom: 56px; }
+.hero .wrap { display: grid; gap: 28px; }
+.hero .eyebrow { color: var(--accent); }
+.cta { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; margin-top: 4px; }
+.btn {
+  display: inline-block; background: var(--accent-fill); color: var(--accent-fg);
+  font-size: 17px; padding: 11px 24px; border-radius: 980px; font-weight: 400;
+}
+.btn:hover { text-decoration: none; filter: brightness(1.08); }
+.more { font-size: 17px; }
+.more::after { content: " \203A"; }
+
+.stage {
+  margin-top: 28px; background: var(--card); border-radius: 28px; box-shadow: var(--shadow);
+  padding: 28px; overflow: hidden;
+}
+.stage svg { display: block; width: 100%; height: auto; }
+.stage .t { fill: var(--fg2); font-family: var(--font); font-size: 13px; }
+.stage .t-strong { fill: var(--fg); font-family: var(--font); font-size: 14px; font-weight: 600; }
+.stage .frame { fill: var(--bg2); stroke: var(--line); stroke-width: 1; }
+.stage .rail { fill: none; stroke: var(--line); stroke-width: 1; }
+
+/* cards */
+.grid { display: grid; gap: 20px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card {
+  background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 10px; min-width: 0;
+}
+.card p { color: var(--fg2); font-size: 16px; }
+.card .k { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; }
+.card ul { margin: 4px 0 0; padding-left: 18px; color: var(--fg2); font-size: 15px; display: grid; gap: 6px; }
+.band:not(.alt) .card { background: var(--bg2); box-shadow: none; }
+
+/* split block */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.facts { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.facts div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.facts dt { color: var(--fg2); font-size: 15px; }
+.facts dd { margin: 0; font-size: 16px; }
+
+/* pipeline */
+.steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; counter-reset: s; }
+.step { background: var(--card); border-radius: 20px; padding: 22px 20px; display: grid; gap: 8px; align-content: start; box-shadow: var(--shadow); min-width: 0; }
+.step .n { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-fill); color: var(--accent-fg); font-size: 14px; font-weight: 600; display: grid; place-items: center; }
+.step h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.step p { font-size: 14px; color: var(--fg2); line-height: 1.4; }
+
+/* code */
+.code { position: relative; background: var(--code-bg); border: 1px solid var(--line); border-radius: 16px; min-width: 0; }
+.code pre { margin: 0; padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: var(--fg); }
+.code .cap { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px 0 20px; font-size: 12px; color: var(--fg2); }
+.copy {
+  font: inherit; font-size: 12px; color: var(--accent); background: transparent; border: 0; padding: 4px 8px; cursor: pointer; border-radius: 8px;
+}
+.copy:hover { background: var(--bg2); }
+.codes { display: grid; gap: 16px; }
+
+/* chart */
+.bars { display: grid; gap: 14px; margin-top: 8px; }
+.bar { display: grid; grid-template-columns: 190px minmax(0, 1fr) 56px; gap: 14px; align-items: center; font-size: 15px; }
+.bar .lbl { min-width: 0; }
+.bar .lbl small { display: block; color: var(--fg2); font-size: 13px; }
+.bar .trk { height: 14px; border-radius: 7px; background: var(--bg2); position: relative; overflow: hidden; }
+.band:not(.alt) .bar .trk { background: var(--bg2); }
+.bar .fill { position: absolute; inset: 0 auto 0 0; border-radius: 7px; background: var(--accent-fill); }
+.bar.plain .fill { background: var(--fg2); opacity: 0.55; }
+.bar .val { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.chart-card { background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); }
+.band:not(.alt) .chart-card { background: var(--bg2); box-shadow: none; }
+.axis { display: grid; grid-template-columns: 190px minmax(0, 1fr) 56px; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--fg2); }
+.axis span:nth-child(2) { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+
+/* resources */
+.rgroup { margin-top: 56px; }
+.rgroup:first-of-type { margin-top: 0; }
+.rgroup h3 { margin-bottom: 14px; }
+.rlist { list-style: none; margin: 0; padding: 0; background: var(--card); border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
+.band:not(.alt) .rlist { background: var(--bg2); box-shadow: none; }
+.res { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 24px; padding: 20px 26px; border-top: 1px solid var(--line); align-items: start; }
+.res:first-child { border-top: 0; }
+.res a.t { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.res p { color: var(--fg2); font-size: 15px; margin-top: 4px; }
+.res .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 13px; color: var(--fg2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 980px; background: var(--accent-fill); color: var(--accent-fg); letter-spacing: 0.01em; }
+.chip.soft { background: transparent; color: var(--fg2); border: 1px solid var(--line); font-weight: 500; }
+.also { display: inline-flex; gap: 14px; flex-wrap: wrap; }
+
+/* order */
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.order { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.order li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: baseline; font-size: 16px; }
+.order .i { color: var(--fg2); font-variant-numeric: tabular-nums; font-size: 14px; }
+.order .tm { color: var(--fg2); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.order small { display: block; color: var(--fg2); font-size: 14px; }
+
+.bullets { margin: 14px 0 0; padding-left: 20px; display: grid; gap: 8px; color: var(--fg2); font-size: 16px; }
+.bullets b { color: var(--fg); font-weight: 600; }
+
+footer { padding-block: 56px 72px; border-top: 1px solid var(--line); color: var(--fg2); font-size: 13px; line-height: 1.5; }
+footer .wrap { display: grid; gap: 10px; }
+
+
+/* views, filter, digest */
+section[id], header[id] { scroll-margin-top: calc(60px + env(safe-area-inset-top, 0px)); }
+#v-digest, #v-roles { display: none; }
+html[data-view="digest"] #v-digest { display: block; }
+html[data-view="roles"] #v-roles { display: block; }
+html[data-view="digest"] #v-plan, html[data-view="roles"] #v-plan { display: none; }
+html[data-view="digest"] .nav-plan, html[data-view="roles"] .nav-plan { display: none; }
+html:not([data-view="digest"]) .nav-digest { display: none; }
+html:not([data-view="roles"]) .nav-roles { display: none; }
+.seg { display: inline-flex; background: var(--bg2); border-radius: 980px; padding: 3px; flex: none; }
+.seg a { color: var(--fg2); font-size: 13px; padding: 4px 14px; border-radius: 980px; white-space: nowrap; }
+.seg a:hover { color: var(--fg); text-decoration: none; }
+.seg a[aria-current="page"] { background: var(--card); color: var(--fg); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.filter button {
+  font: inherit; font-size: 14px; color: var(--fg); background: transparent; border: 1px solid var(--line);
+  border-radius: 980px; padding: 6px 16px; cursor: pointer;
+}
+.filter button:hover { background: var(--bg2); }
+.filter button[aria-pressed="true"] { background: var(--accent-fill); border-color: transparent; color: var(--accent-fg); }
+.dgroup { margin-top: 56px; }
+.dgroup:first-of-type { margin-top: 0; }
+.dgroup h3 { margin-bottom: 4px; }
+.dgroup > p { margin-bottom: 18px; }
+.dg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.dg { background: var(--card); border-radius: 24px; padding: 26px; box-shadow: var(--shadow); display: grid; gap: 14px; align-content: start; min-width: 0; }
+.band:not(.alt) .dg { background: var(--bg2); box-shadow: none; }
+.dg { grid-template-columns: minmax(0, 1fr); }
+.dg .dg-top { display: flex; justify-content: space-between; gap: 8px 12px; align-items: start; flex-wrap: wrap; }
+.dg .dg-top > div:first-child { min-width: 0; flex: 1 1 220px; }
+.dg .kind { font-size: 13px; font-weight: 600; color: var(--accent); }
+.dg h4 { margin: 2px 0 0; font-size: 18px; line-height: 1.25; font-weight: 600; letter-spacing: -0.012em; text-wrap: balance; }
+.dg h4 a { color: var(--fg); }
+.dg h4 a:hover { color: var(--accent); text-decoration: none; }
+.dg .tags { display: flex; gap: 6px; flex: none; }
+.dg dl { margin: 0; display: grid; gap: 10px; }
+.dg dl div { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; font-size: 15px; line-height: 1.45; }
+.dg dt { color: var(--fg2); font-size: 13px; font-weight: 600; padding-top: 2px; }
+.dg dd { margin: 0; overflow-wrap: anywhere; }
+.dg dd.w { color: var(--fg2); }
+.dg code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; }
+.dg-note { margin-top: 20px; }
+[hidden] { display: none !important; }
+
+@media (max-width: 860px) {
+  .band { padding-block: 64px; }
+  .dg-grid { grid-template-columns: minmax(0, 1fr); }
+  .g3, .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split, .cols { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+}
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .g2, .g3, .g4, .steps { grid-template-columns: minmax(0, 1fr); }
+  .stage { padding: 14px; border-radius: 22px; }
+  .card { padding: 22px; border-radius: 20px; }
+  .bar, .axis { grid-template-columns: minmax(0, 1fr) 48px; }
+  .bar .trk { grid-column: 1 / -1; grid-row: 2; }
+  .bar .val { grid-row: 1; grid-column: 2; }
+  .axis span:first-child, .axis span:last-child { display: none; }
+  .axis { grid-template-columns: minmax(0, 1fr); }
+  .facts div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .res { grid-template-columns: minmax(0, 1fr); padding: 18px 20px; }
+  .res .meta { flex-direction: row; align-items: center; justify-content: flex-start; flex-wrap: wrap; }
+  .nav strong { display: none; }
+  .dg { padding: 22px; border-radius: 20px; }
+  .dg dl div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+
+/* ---- роли и подгруппы ---- */
+:root { --ra: #0071e3; --rb: #a64bd6; --rc: #d97a00; --rd: #1f9d55; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ra: #0a84ff; --rb: #bf5af2; --rc: #ff9f0a; --rd: #30d158; }
+}
+:root[data-theme="dark"] { --ra: #0a84ff; --rb: #bf5af2; --rc: #ff9f0a; --rd: #30d158; }
+.role { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--fg2); white-space: nowrap; }
+.role::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--dot, var(--fg2)); flex: none; }
+.role.r1 { --dot: var(--ra); } .role.r2 { --dot: var(--rb); } .role.r3 { --dot: var(--rc); } .role.r4 { --dot: var(--rd); }
+.roles-row { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.tcard { background: var(--card); border-radius: 24px; padding: 26px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.band:not(.alt) .tcard { background: var(--bg2); box-shadow: none; }
+.tcard .k { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; }
+.tcard ul { margin: 2px 0 0; padding-left: 18px; color: var(--fg2); font-size: 15px; display: grid; gap: 6px; }
+.sub { margin-top: 56px; }
+.sub:first-of-type { margin-top: 0; }
+.sub-head { display: grid; gap: 6px; margin-bottom: 18px; }
+.sub .rgroup { margin-top: 20px; }
+.sub .rgroup:first-of-type { margin-top: 0; }
+.rh { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg2); margin: 0 0 10px; }
+.deliver { margin-top: 8px; font-size: 15px; color: var(--fg2); }
+.deliver b { color: var(--fg); font-weight: 600; }
+.note { font-size: 14px; color: var(--fg2); }
+.stage .pt-a { fill: var(--accent-fill); }
+.stage .pt-b { fill: var(--fg2); }
+.stage .axis-l { stroke: var(--fg2); stroke-width: 1.2; fill: none; }
+.stage .grid-l { stroke: var(--line); stroke-width: 1; fill: none; }
+.stage .si-l { stroke: var(--accent-fill); stroke-width: 1.8; fill: none; stroke-dasharray: 5 5; }
+.stage .si-1 { stroke: var(--fg2); stroke-width: 1.2; fill: none; stroke-dasharray: 2 5; }
+.stage .zone { fill: var(--accent-fill); opacity: 0.09; }
+.stage .t-acc { fill: var(--accent); font-family: var(--font); font-size: 13px; font-weight: 600; }
+.stage .t-pt { fill: var(--fg); font-family: var(--font); font-size: 13px; font-weight: 700; }
+.stage .t-pt-on { fill: var(--accent-fg); font-family: var(--font); font-size: 13px; font-weight: 700; }
+.handoff { display: grid; gap: 0; border-top: 1px solid var(--line); margin-top: 8px; }
+.handoff div { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.handoff dt { color: var(--fg); font-weight: 600; }
+.handoff dd { margin: 0; color: var(--fg2); }
+.handoff code, .bullets code, .tcard code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; }
+.dg code, .res code { overflow-wrap: anywhere; }
+@media (max-width: 560px) { .handoff div { grid-template-columns: minmax(0, 1fr); gap: 4px; } .tcard { padding: 22px; border-radius: 20px; } }
+</style>
+<nav class="nav" aria-label="Разделы">
+  <div class="wrap">
+    <strong>Хакатон VACV</strong>
+    <div class="seg" id="seg">
+      <a href="#plan" data-v="plan" aria-current="page">План</a>
+      <a href="#roles" data-v="roles">По ролям</a>
+      <a href="#digest" data-v="digest">Выжимки</a>
+    </div>
+    <ul class="nav-plan">
+      <li><a href="#task">Задача</a></li>
+      <li><a href="#pipeline">Пайплайн</a></li>
+      <li><a href="#tasks">Задачи</a></li>
+      <li><a href="#team">Команда</a></li>
+      <li><a href="#sources">Ресурсы</a></li>
+      <li><a href="#order">Порядок</a></li>
+      <li><a href="#questions">Вопросы</a></li>
+    </ul>
+    <ul class="nav-roles">
+      <li><a href="#r-1">Данные</a></li>
+      <li><a href="#r-2">Признаки</a></li>
+      <li><a href="#r-3">Нейросети</a></li>
+      <li><a href="#r-4">Валидация</a></li>
+    </ul>
+    <ul class="nav-digest">
+      <li><a href="#dg-practice">Код</a></li>
+      <li><a href="#dg-data">Данные</a></li>
+      <li><a href="#dg-ru">По-русски</a></li>
+      <li><a href="#dg-papers">Статьи</a></li>
+    </ul>
+  </div>
+</nav>
+<div id="v-plan">
+<header class="hero band">
+  <div class="wrap">
+    <p class="eyebrow">Хакатон · команда из 4</p>
+    <h1 class="h-xl">Бьёт по вирусу.<br>Щадит клетку.<br>Считаем заранее.</h1>
+    <p class="lead">Модель машинного обучения по формуле соединения оценивает, подействует ли оно на вирус оспы (VACV) и не повредит ли клеткам человека.</p>
+    <div class="cta">
+      <a class="btn" href="#tasks">Смотреть задачи</a>
+      <a class="more" href="#sources">Ресурсы</a>
+      <a class="more" href="#roles">Материалы по ролям</a>
+      <a class="more" href="#digest">Выжимки</a>
+    </div>
+    <div class="stage" role="img" aria-label="Схема: по осям IC50 и CC50, диагональ SI равно десяти отделяет зону высокой селективности">
+      <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg">
+  <polygon class="zone" points="70,270 470,20 70,20"/>
+  <g>
+    <path class="grid-l" d="M170 20 V270 M270 20 V270 M370 20 V270 M470 20 V270"/>
+    <path class="grid-l" d="M70 207.5 H470 M70 145 H470 M70 82.5 H470 M70 20 H470"/>
+  </g>
+  <path class="axis-l" d="M70 20 V270 H470"/>
+  <path class="si-l" d="M70 270 L470 20"/>
+  <path class="si-1" d="M170 270 L470 82.5"/>
+  <g class="t" text-anchor="middle">
+    <text x="70" y="288">0,01</text><text x="170" y="288">0,1</text><text x="270" y="288">1</text><text x="370" y="288">10</text><text x="470" y="288">100</text>
+  </g>
+  <g class="t" text-anchor="end">
+    <text x="62" y="274">0,1</text><text x="62" y="211">1</text><text x="62" y="149">10</text><text x="62" y="86">100</text><text x="62" y="24">1000</text>
+  </g>
+  <text class="t" x="270" y="312" text-anchor="middle">IC50, мкМ (меньше лучше)</text>
+  <text class="t" x="16" y="145" transform="rotate(-90 16 145)" text-anchor="middle">CC50, мкМ (больше лучше)</text>
+  <text class="t-acc" x="80" y="36">зона высокой селективности</text>
+  <text class="t" x="330" y="100" transform="rotate(-32 330 100)">SI = 10</text>
+  <text class="t" x="296" y="182" transform="rotate(-32 296 182)">SI = 1</text>
+  <circle class="pt-a" cx="217.7" cy="52.6" r="11"/><text class="t-pt-on" x="217.7" y="57" text-anchor="middle">A</text>
+  <circle class="pt-a" cx="300" cy="82.5" r="11"/><text class="t-pt-on" x="300" y="87" text-anchor="middle">D</text>
+  <circle class="pt-b" cx="240" cy="213.6" r="11"/><text class="t-pt" x="240" y="218" text-anchor="middle" style="fill:var(--bg)">B</text>
+  <circle class="pt-b" cx="417.7" cy="101.3" r="11"/><text class="t-pt" x="417.7" y="106" text-anchor="middle" style="fill:var(--bg)">C</text>
+  <g>
+    <text class="t-strong" x="510" y="46">SI = CC50 / IC50</text>
+    <text class="t" x="510" y="72">IC50: доза, подавляющая вирус</text>
+    <text class="t" x="510" y="94">CC50: доза, убивающая клетки</text>
+    <text class="t" x="510" y="130">A и D: активны и безопасны</text>
+    <text class="t" x="510" y="152">B: действует, но токсично</text>
+    <text class="t" x="510" y="174">C: слабое действие</text>
+    <text class="t" x="510" y="216">Модель должна находить</text>
+    <text class="t" x="510" y="236">такие молекулы по формуле</text>
+    <text class="t" x="510" y="256">(строка SMILES).</text>
+    <text class="t" x="510" y="300">Схема, значения вымышлены.</text>
+  </g>
+</svg>
+    </div>
+  </div>
+</header>
+<section class="band alt" id="task">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Задача</p>
+      <h2 class="h-lg">Что просят сделать</h2>
+      <p class="lead">Разработать модель машинного обучения, которая оценивает способность химических соединений воздействовать на вирус оспы (VACV) без поражения иных объектов в организме человека.</p>
+    </div>
+    <div class="split">
+      <dl class="facts" style="margin:0">
+        <div><dt>Вход</dt><dd>Не указан. Вероятно, таблица: SMILES и измерения активности и токсичности.</dd></div>
+        <div><dt>Выход</dt><dd>Оценка способности соединения действовать на VACV без вреда для клеток: число или класс.</dd></div>
+        <div><dt>Метрика</dt><dd>Не указана.</dd></div>
+        <div><dt>Ограничения</dt><dd>Не указаны: ни внешние данные, ни предобученные модели.</dd></div>
+      </dl>
+      <div class="card">
+        <p class="k">Как мы читаем условие</p>
+        <h3 class="h-md">Скорее всего, это селективность</h3>
+        <p>Слова «без поражения иных объектов» похожи на требование низкой токсичности для клеток. В лабораторных данных это пара IC50 (доза, подавляющая вирус) и CC50 (доза, убивающая клетки), а их отношение SI = CC50 / IC50 называют индексом селективности. Это наше допущение, его нужно подтвердить у организаторов.</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card"><p class="k">Тип</p><h3 class="h-md">Хемоинформатика</h3><p>QSAR: зависимость «структура и свойство». Классификация или регрессия по молекулам.</p></div>
+      <div class="card"><p class="k">Темы</p><h3 class="h-md">Что нужно знать</h3><p>SMILES, отпечатки и дескрипторы, scaffold split, градиентный бустинг, графовые сети, метрики при дисбалансе, SHAP.</p></div>
+      <div class="card"><p class="k">Стек</p><h3 class="h-md">Python у всех</h3><p>RDKit, pandas, scikit-learn, CatBoost или LightGBM, Optuna, Chemprop, SHAP.</p></div>
+    </div>
+  </div>
+</section>
+<section class="band" id="pipeline">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Бейзлайн за 1–2 часа</p>
+      <h2 class="h-lg">Пять шагов от таблицы до оценки</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Данные и таргет</h3><p>SMILES, IC50, CC50. Считаем SI и бинарную метку.</p></div>
+      <div class="step"><span class="n">2</span><h3>Очистка</h3><p>Соли, заряды, дубликаты, единицы измерения.</p></div>
+      <div class="step"><span class="n">3</span><h3>Признаки</h3><p>Отпечаток Моргана и дескрипторы RDKit.</p></div>
+      <div class="step"><span class="n">4</span><h3>Модели</h3><p>Градиентный бустинг, затем графовая сеть Chemprop.</p></div>
+      <div class="step"><span class="n">5</span><h3>Проверка</h3><p>Scaffold split, PR-AUC и ROC-AUC, SHAP.</p></div>
+    </div>
+    <div class="codes" style="margin-top:40px">
+      <div class="code">
+        <div class="cap"><span>Каркас бейзлайна: RDKit и CatBoost на scaffold-группах (не запускался)</span><button class="copy" type="button" data-copy="c1">Скопировать</button></div>
+        <pre id="c1">import numpy as np, pandas as pd
+from rdkit import Chem
+from rdkit.Chem import rdFingerprintGenerator
+from rdkit.Chem.MolStandardize import rdMolStandardize
+from rdkit.Chem.Scaffolds import MurckoScaffold
+from sklearn.model_selection import GroupKFold
+from sklearn.metrics import roc_auc_score, average_precision_score
+from catboost import CatBoostClassifier
+
+df = pd.read_csv(&quot;data/raw.csv&quot;)            # smiles, ic50_uM, cc50_uM (названия колонок уточнить)
+df[&quot;si&quot;] = df[&quot;cc50_uM&quot;] / df[&quot;ic50_uM&quot;]
+df[&quot;label&quot;] = (df[&quot;si&quot;] &gt;= 10).astype(int)  # порог 10: наше допущение, подтвердить
+
+chooser, unch = rdMolStandardize.LargestFragmentChooser(), rdMolStandardize.Uncharger()
+def standardize(smi):
+    mol = Chem.MolFromSmiles(smi)
+    if mol is None:
+        return None
+    mol = chooser.choose(rdMolStandardize.Cleanup(mol))
+    return Chem.MolToSmiles(unch.uncharge(mol))
+
+df[&quot;smiles_std&quot;] = df[&quot;smiles&quot;].map(standardize)
+df = df.dropna(subset=[&quot;smiles_std&quot;]).drop_duplicates(&quot;smiles_std&quot;)
+
+gen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
+X = np.stack(df[&quot;smiles_std&quot;].map(lambda s: gen.GetCountFingerprintAsNumPy(Chem.MolFromSmiles(s))))
+y = df[&quot;label&quot;].values
+groups = df[&quot;smiles_std&quot;].map(lambda s: MurckoScaffold.MurckoScaffoldSmiles(smiles=s) or &quot;acyclic&quot;)
+
+oof = np.zeros(len(df))                     # финальные разбиения выдаст роль 4, это временная схема
+for tr, va in GroupKFold(n_splits=5).split(X, y, groups):
+    model = CatBoostClassifier(iterations=300, depth=6, learning_rate=0.05,
+                               auto_class_weights=&quot;Balanced&quot;, verbose=0)
+    model.fit(X[tr], y[tr])
+    oof[va] = model.predict_proba(X[va])[:, 1]
+
+print(&quot;ROC-AUC&quot;, roc_auc_score(y, oof), &quot;PR-AUC&quot;, average_precision_score(y, oof))</pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span>Chemprop из командной строки (флаги сверены с документацией, не запускалось)</span><button class="copy" type="button" data-copy="c2">Скопировать</button></div>
+        <pre id="c2">pip install chemprop
+
+# SMILES и метка из нашего CSV, scaffold-разбиение внутри Chemprop
+chemprop train --data-path data/clean.csv --task-type classification \
+    --smiles-columns smiles_std --target-columns label \
+    --split-type scaffold_balanced --epochs 50 --ensemble-size 3 \
+    --output-dir runs/chemprop_cls
+
+# когда роль 4 выдаст splits.csv, вместо --split-type:
+#   --splits-column split</pre>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="band alt" id="tasks">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Задачи</p>
+      <h2 class="h-lg">Девять групп задач</h2>
+      <p class="lead">У каждой группы есть подгруппы и ответственный. Подробный список подгрупп с источниками на вкладке <a href="#roles">«По ролям»</a>.</p>
+    </div>
+    <div class="grid g3"><div class="tcard"><p class="k">Группа 1</p><h3 class="h-md">Постановка и данные</h3><div class="roles-row"><span class="role r1">Роль 1</span></div><ul><li>формат данных и метрика</li><li>таргеты: pIC50, SI, бинарная метка</li><li>цензурированные значения и повторы</li></ul></div><div class="tcard"><p class="k">Группа 2</p><h3 class="h-md">Подготовка и очистка</h3><div class="roles-row"><span class="role r1">Роль 1</span></div><ul><li>валидность SMILES, соли, заряды</li><li>дубликаты и противоречия</li><li>единицы измерения, EDA, дисбаланс</li></ul></div><div class="tcard"><p class="k">Группа 3</p><h3 class="h-md">Признаки</h3><div class="roles-row"><span class="role r2">Роль 2</span><span class="role r3">Роль 3</span></div><ul><li>отпечатки Моргана и MACCS</li><li>дескрипторы RDKit</li><li>предобученные эмбеддинги (MoLFormer)</li></ul></div><div class="tcard"><p class="k">Группа 4</p><h3 class="h-md">Схема валидации</h3><div class="roles-row"><span class="role r4">Роль 4</span></div><ul><li>scaffold и кластерные разбиения</li><li>тест на далёких молекулах</li><li>seed и файл splits.csv</li></ul></div><div class="tcard"><p class="k">Группа 5</p><h3 class="h-md">Бейзлайны</h3><div class="roles-row"><span class="role r2">Роль 2</span></div><ul><li>случайный лес, CatBoost, LightGBM, SVM</li><li>отдельные модели активности и токсичности</li><li>таблица результатов</li></ul></div><div class="tcard"><p class="k">Группа 6</p><h3 class="h-md">Улучшение моделей</h3><div class="roles-row"><span class="role r2">Роль 2</span><span class="role r3">Роль 3</span></div><ul><li>Chemprop и multitask</li><li>Optuna, веса классов, порог</li><li>ансамбль и стекинг</li></ul></div><div class="tcard"><p class="k">Группа 7</p><h3 class="h-md">Оценка качества</h3><div class="roles-row"><span class="role r4">Роль 4</span></div><ul><li>ROC-AUC, PR-AUC, F1, MCC, RMSE</li><li>повторы и доверительные интервалы</li><li>область применимости</li></ul></div><div class="tcard"><p class="k">Группа 8</p><h3 class="h-md">Интерпретируемость</h3><div class="roles-row"><span class="role r4">Роль 4</span></div><ul><li>SHAP по бустингу</li><li>подсветка подструктур</li><li>химические выводы и разбор ошибок</li></ul></div><div class="tcard"><p class="k">Группа 9</p><h3 class="h-md">Оформление решения</h3><div class="roles-row"><span class="role r4">Роль 4</span><span class="role r1">Роль 1</span><span class="role r2">Роль 2</span><span class="role r3">Роль 3</span></div><ul><li>один скрипт и функция predict(SMILES)</li><li>слайды и демо</li><li>ограничения и дальнейшие шаги</li></ul></div></div>
+  </div>
+</section>
+<section class="band" id="team">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Команда</p>
+      <h2 class="h-lg">Четыре потока работы</h2>
+      <p class="lead">Первые два часа все читают общий минимум. Потом расходимся по ролям и обмениваемся файлами в общем формате. Если у кого-то больше опыта с нейросетями, роли 2 и 3 можно поменять местами.</p>
+    </div>
+    <div class="grid g2"><div class="card"><p class="k">Роль 1 · <a href="#r-1">материалы роли</a></p><h3 class="h-md">Данные и химия</h3><p>Превращают таблицу организаторов в чистые данные и понятный таргет.</p><ul><li>Постановка и таргет</li><li>Очистка и стандартизация структур</li><li>Анализ данных и внешние источники</li></ul></div><div class="card"><p class="k">Роль 2 · <a href="#r-2">материалы роли</a></p><h3 class="h-md">Признаки и классические модели</h3><p>Строят признаки и быстрый сильный бейзлайн, с которым сравнивают всё остальное.</p><ul><li>Признаки</li><li>Бейзлайны</li><li>Подбор гиперпараметров</li><li>Дисбаланс и порог</li></ul></div><div class="card"><p class="k">Роль 3 · <a href="#r-3">материалы роли</a></p><h3 class="h-md">Нейросети и представления</h3><p>Графовая сеть Chemprop, предобученные модели и итоговый ансамбль.</p><ul><li>Chemprop (D-MPNN)</li><li>Multitask и предобучение</li><li>Ансамбль и неопределённость</li></ul></div><div class="card"><p class="k">Роль 4 · <a href="#r-4">материалы роли</a></p><h3 class="h-md">Валидация, интерпретация и питч</h3><p>Честная схема проверки, метрики, объяснения и всё, что увидит жюри.</p><ul><li>Схема валидации</li><li>Метрики и калибровка</li><li>Интерпретация и область применимости</li><li>Сборка, predict(SMILES) и питч</li></ul></div></div>
+
+    <div class="sec-head" style="margin-top:88px">
+      <p class="eyebrow">Договорённости</p>
+      <h2 class="h-lg">Что кто кому передаёт</h2>
+    </div>
+    <dl class="handoff">
+      <div><dt>Роль 1 → все</dt><dd><code>data/clean.csv</code>: id, smiles_std, ic50, cc50, si, label. Отдать как можно раньше, даже в сыром виде.</dd></div>
+      <div><dt>Роль 4 → все</dt><dd><code>splits.csv</code>: id и колонка split (train, val, test). В течение первых двух часов, дальше не меняется.</dd></div>
+      <div><dt>Роль 2 → роль 4</dt><dd><code>preds/&lt;модель&gt;_val.csv</code> и <code>_test.csv</code>: id и вероятность или значение.</dd></div>
+      <div><dt>Роль 3 → роль 4</dt><dd>Предсказания Chemprop в том же формате. Ансамбль собираем на val.</dd></div>
+      <div><dt>Все → роль 4</dt><dd>Номер версии признаков и параметры модели: чтобы воспроизвести результат и объяснить его на защите.</dd></div>
+    </dl>
+
+    <div class="sec-head" style="margin-top:88px">
+      <p class="eyebrow">Защита</p>
+      <h2 class="h-lg">Что показать жюри</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card"><h3 class="h-md">Схема пайплайна</h3><p>Одна картинка с пятью шагами и тем, что в них своё.</p></div>
+      <div class="card"><h3 class="h-md">Честная валидация</h3><p>Метрики на случайном и на scaffold-разбиении рядом: видно, насколько оценка падает на новых каркасах.</p></div>
+      <div class="card"><h3 class="h-md">Таблица метрик</h3><p>PR-AUC и ROC-AUC на val и test. Абляция: бейзлайн, затем Chemprop, затем ансамбль.</p></div>
+      <div class="card"><h3 class="h-md">Объяснения</h3><p>SHAP по признакам и подсветка подструктур у активных и безопасных молекул.</p></div>
+      <div class="card"><h3 class="h-md">Область применимости</h3><p>Расстояние до ближайшей обучающей молекулы против ошибки, и предупреждение в predict.</p></div>
+      <div class="card"><h3 class="h-md">Воспроизводимость</h3><p>Один скрипт запуска от CSV до файла результата и функция <code>predict(smiles)</code>.</p></div>
+    </div>
+  </div>
+</section>
+<section class="band alt" id="sources">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Ресурсы</p>
+      <h2 class="h-lg">Всё найдено и открыто</h2>
+      <p class="lead">Русские и английские материалы, с упором на код и работу с библиотеками. Метка «код» значит, что на странице есть команды или фрагменты кода. Время на изучение оценено нами. «Минимум» отмечает то, что нужно сделать в первые два часа.</p>
+      <div class="filter" role="group" aria-label="Фильтр материалов">
+        <button type="button" data-f="all" aria-pressed="true">Все</button>
+        <button type="button" data-f="ru" aria-pressed="false">Русский</button>
+        <button type="button" data-f="en" aria-pressed="false">English</button>
+        <button type="button" data-f="code" aria-pressed="false">С кодом</button>
+      </div>
+    </div>
+    <div class="rgroup"><h3 class="h-md">Код и библиотеки</h3><p class="muted" style="margin:-6px 0 14px">Документация, руководства и репозитории с кодом. Здесь больше всего того, что можно запустить.</p><ul class="rlist"><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html" target="_blank" rel="noopener noreferrer">RDKit. Getting Started with the RDKit in Python</a><p>Официальное введение: чтение молекул, подструктуры, отпечатки и сходство, дескрипторы.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>40 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://education.molssi.org/python-data-science-chemistry/rdkit_descriptors/rdkit.html" target="_blank" rel="noopener noreferrer">MolSSI. Introduction to RDKit</a><p>Урок из курса Python for Data Science in Chemistry: молекулы из SMILES, дескрипторы, подструктуры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>20 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/descriptors.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Fingerprints and Descriptors</a><p>Готовые функции Pat Walters: отпечатки из SMILES, дескрипторы в pandas, сравнение train и test по Tanimoto.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/split_utils.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Cross-validation and data splitting</a><p>Группы для разбиения: scaffold, кластеры Butina, KMeans, GroupKFold и вложенная кросс-валидация.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://scikit-fingerprints.readthedocs.io/latest/modules/generated/skfp.model_selection.scaffold_train_test_split.html" target="_blank" rel="noopener noreferrer">scikit-fingerprints. scaffold_train_test_split</a><p>Разбиение по scaffold Бемиса и Мерко одной функцией, с примером кода.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a><p>41 ноутбук: QSAR за 8 строк, классификация и регрессия, кросс-валидация, кластеризация, Chemprop.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>1 час</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://molvs.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer">MolVS: Molecule Validation and Standardization</a><p>Проверка и стандартизация молекул: соли, заряды, таутомеры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://catboost.ai/docs/en/concepts/python-quickstart" target="_blank" rel="noopener noreferrer">CatBoost. Python quick start</a><p>Классификатор и регрессор CatBoost в нескольких строках, объект Pool.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://github.com/optuna/optuna-examples/blob/main/README.md" target="_blank" rel="noopener noreferrer">Optuna Examples (README на GitHub)</a><p>Индекс примеров Optuna для LightGBM, CatBoost, XGBoost и scikit-learn.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html" target="_blank" rel="noopener noreferrer">SHAP. TreeExplainer</a><p>TreeExplainer: объяснения для XGBoost, LightGBM, CatBoost и деревьев scikit-learn.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score" target="_blank" rel="noopener noreferrer">scikit-learn. average_precision_score</a><p>Средняя точность: метрика для редкого положительного класса.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://pypi.org/project/chemprop/" target="_blank" rel="noopener noreferrer">PyPI. chemprop</a><p>Установка Chemprop: версия, Python, лицензия.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>5 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop. Документация</a><p>Руководства по CLI и Python, ноутбуки: multitask, дообучение, неопределённость, интерпретация.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop. CLI: обучение</a><p>Команда chemprop train: типы задач, разбиения, эпохи, ансамбль.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>20 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/python/data/splitting.html" target="_blank" rel="noopener noreferrer">Chemprop. Разбиение данных (Python)</a><p>Типы разбиений: scaffold_balanced, kmeans, kennard_stone и защита от дубликатов.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li></ul></div><div class="rgroup"><h3 class="h-md">Данные и базы</h3><p class="muted" style="margin:-6px 0 14px">Как получить и подготовить данные об активности, если организаторы разрешат внешние источники.</p><ul class="rlist"><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://chembl.gitbook.io/chembl-interface-documentation/web-services/chembl-data-web-services" target="_blank" rel="noopener noreferrer">ChEMBL. Web services</a><p>REST API ChEMBL и Python-клиент: как достать активности и структуры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>20 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://projects.volkamerlab.org/teachopencadd/talktorials/T001_query_chembl.html" target="_blank" rel="noopener noreferrer">TeachOpenCADD T001. Данные из ChEMBL</a><p>Как скачать IC50 из ChEMBL, очистить и перевести в pIC50.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li></ul></div><div class="rgroup"><h3 class="h-md">На русском</h3><p class="muted" style="margin:-6px 0 14px">Русскоязычных материалов именно про QSAR и противовирусные соединения мало. Здесь лучшее из найденного: бустинг, графовые сети, метрики, программа курса.</p><ul class="rlist"><li class="res" data-lang="ru" data-code="1"><div><a class="t" href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr. Предсказание растворимости графовыми свёрточными сетями</a><p>Графовые сети против бустинга на дескрипторах на примере растворимости (ESOL).</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li><li class="res" data-lang="ru" data-code="1"><div><a class="t" href="https://habr.com/ru/post/527554" target="_blank" rel="noopener noreferrer">Habr. Быстрый градиентный бустинг с CatBoost</a><p>Перевод обзора CatBoost: fit, cv, grid_search, параметры.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li><li class="res" data-lang="ru" data-code="1"><div><a class="t" href="https://habr.com/ru/post/953158" target="_blank" rel="noopener noreferrer">Habr. Борьба с дисбалансом классов. Стандартные методы</a><p>Метрики при дисбалансе, подбор порога, веса классов в бустинге.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>17 мин</span></div></li><li class="res" data-lang="ru" data-code="0"><div><a class="t" href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=ru" target="_blank" rel="noopener noreferrer">Google ML Crash Course. ROC и AUC</a><p>ROC и AUC на русском: как выбирать порог и когда нужны кривые точность-полнота.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip">Минимум</span><span>10 мин</span></div></li><li class="res" data-lang="ru" data-code="0"><div><a class="t" href="https://static.centraluniversity.ru/documents/legal/education/programm/online-form/ii-v-biotehe/b1-o-dv-04-01-15-01-hemoinformatika-i-mashinnoe-obuchenie-3-sem.pdf" target="_blank" rel="noopener noreferrer">Центральный университет. Программа курса «Хемоинформатика и машинное обучение»</a><p>Рабочая программа курса: темы, инструменты, базы данных.</p></div><div class="meta"><span class="chip soft">RU</span><span>10 мин</span></div></li></ul></div><div class="rgroup"><h3 class="h-md">Статьи и исследования</h3><p class="muted" style="margin:-6px 0 14px">Теория: как валидировать, какие модели брать и что уже сделано для противовирусных соединений.</p><ul class="rlist"><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://research.chalmers.se/en/publication/530690" target="_blank" rel="noopener noreferrer">Bender et al. Evaluation guidelines for ML tools in the chemical sciences (2022)</a><p>Perspective в Nature Reviews Chemistry: как честно оценивать модели в химии.</p></div><div class="meta"><span class="chip soft">EN</span><span>40 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://arxiv.org/pdf/2607.10729" target="_blank" rel="noopener noreferrer">Zheng et al. Beyond Scaffold Splits (arXiv 2607.10729)</a><p>Почему scaffold split недостаточен: проверка на редких и далёких молекулах.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://arxiv.org/pdf/2102.09548" target="_blank" rel="noopener noreferrer">Huang et al. Therapeutics Data Commons (arXiv 2102.09548)</a><p>Платформа TDC: наборы данных и типы разбиений.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://www.cambridge.org/engage/coe/article-details/68bb5b5b23be8e43d65c5cc5" target="_blank" rel="noopener noreferrer">Graff et al. Chemprop v2 (Cambridge Open Engage, 2025)</a><p>Chemprop v2: что нового и насколько быстрее.</p></div><div class="meta"><span class="chip soft">EN</span><span>20 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://www.alphaxiv.org/abs/2106.09553v3" target="_blank" rel="noopener noreferrer">Ross et al. MoLFormer (arXiv 2106.09553)</a><p>MoLFormer: трансформер на SMILES, предобученный на 1,1 млрд молекул.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res" data-lang="en" data-code="1"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>NCATS: модели избирательной противовирусной активности с учётом цитотоксичности.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://dspace.kpfu.ru/xmlui/handle/net/129749" target="_blank" rel="noopener noreferrer">Klimenko et al. DNA intercalating antiviral agents against VACV (2017)</a><p>Работа про вирус осповакцины: QSAR и фармакофор, отбор соединений с низкой цитотоксичностью.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://arxiv.org/pdf/2605.04265" target="_blank" rel="noopener noreferrer">Elton, Estep. Benchmarking open-source tools for antiviral discovery (arXiv 2605.04265)</a><p>Бенчмарк открытых инструментов для противовирусных препаратов, акцент на подготовке данных.</p></div><div class="meta"><span class="chip soft">EN</span><span>30 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7162012" target="_blank" rel="noopener noreferrer">QSAR противовирусной активности на данных ChEMBL (PMC7162012)</a><p>Модели процента ингибирования по вирусам из ChEMBL; осповакцина есть, но в малой доле.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res" data-lang="en" data-code="0"><div><a class="t" href="https://variational.ai/blog/applicability-domains-are-common-in-qsar-but-irrelevant-for-conventional-ml-tasks/" target="_blank" rel="noopener noreferrer">Rolfe. Applicability domains in QSAR (Variational AI, 2024)</a><p>Что такое область применимости и почему её порог условен.</p></div><div class="meta"><span class="chip soft">EN</span><span>10 мин</span></div></li></ul></div>
+  </div>
+</section>
+<section class="band" id="order">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Порядок изучения</p>
+      <h2 class="h-lg">Сначала минимум, потом всё остальное</h2>
+    </div>
+    <div class="cols">
+      <div class="card">
+        <p class="k">Минимум, около 2 часов</p>
+        <p class="muted" style="font-size:15px">Краткий пересказ каждого материала на вкладке <a href="#digest">«Выжимки»</a>.</p>
+        <ol class="order"><li><span class="i">1</span><span><a href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=ru" target="_blank" rel="noopener noreferrer">Google: ROC и AUC</a><small>порог и метрики на русском</small></span><span class="tm">10 мин</span></li><li><span class="i">2</span><span><a href="https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html" target="_blank" rel="noopener noreferrer">RDKit: Getting Started</a><small>SMILES, дескрипторы, отпечатки</small></span><span class="tm">30 мин</span></li><li><span class="i">3</span><span><a href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters: ноутбуки</a><small>QSAR в 8 строк и сравнение моделей</small></span><span class="tm">40 мин</span></li><li><span class="i">4</span><span><a href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop: обучение из CLI</a><small>первая команда и scaffold_balanced</small></span><span class="tm">20 мин</span></li><li><span class="i">5</span><span><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. (2025)</a><small>как моделировать активность и токсичность отдельно</small></span><span class="tm">30 мин</span></li></ol>
+      </div>
+      <div class="card">
+        <p class="k">Если останется время</p>
+        <ol class="order"><li><span class="i">1</span><span><a href="https://arxiv.org/pdf/2102.09548" target="_blank" rel="noopener noreferrer">TDC</a> и <a href="https://arxiv.org/pdf/2607.10729" target="_blank" rel="noopener noreferrer">Beyond Scaffold Splits</a><small>почему scaffold split и что за ним</small></span><span class="tm">50 мин</span></li><li><span class="i">2</span><span><a href="https://research.chalmers.se/en/publication/530690" target="_blank" rel="noopener noreferrer">Bender et al.</a><small>чек-лист честной оценки</small></span><span class="tm">40 мин</span></li><li><span class="i">3</span><span><a href="https://habr.com/ru/post/953158" target="_blank" rel="noopener noreferrer">Habr: дисбаланс классов</a> и <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score" target="_blank" rel="noopener noreferrer">average_precision_score</a><small>порог и PR-AUC</small></span><span class="tm">27 мин</span></li><li><span class="i">4</span><span><a href="https://github.com/optuna/optuna-examples/blob/main/README.md" target="_blank" rel="noopener noreferrer">Optuna Examples</a> и <a href="https://habr.com/ru/post/527554" target="_blank" rel="noopener noreferrer">Habr: CatBoost</a><small>подбор параметров</small></span><span class="tm">35 мин</span></li><li><span class="i">5</span><span><a href="https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html" target="_blank" rel="noopener noreferrer">SHAP TreeExplainer</a> и <a href="https://variational.ai/blog/applicability-domains-are-common-in-qsar-but-irrelevant-for-conventional-ml-tasks/" target="_blank" rel="noopener noreferrer">область применимости</a><small>объяснения и границы модели</small></span><span class="tm">25 мин</span></li><li><span class="i">6</span><span><a href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop: документация</a> и <a href="https://www.cambridge.org/engage/coe/article-details/68bb5b5b23be8e43d65c5cc5" target="_blank" rel="noopener noreferrer">Chemprop v2</a><small>multitask, дообучение, неопределённость</small></span><span class="tm">50 мин</span></li><li><span class="i">7</span><span><a href="https://dspace.kpfu.ru/xmlui/handle/net/129749" target="_blank" rel="noopener noreferrer">Klimenko et al.</a> и <a href="https://arxiv.org/pdf/2605.04265" target="_blank" rel="noopener noreferrer">Elton, Estep</a><small>VACV и подготовка данных</small></span><span class="tm">55 мин</span></li><li><span class="i">8</span><span><a href="https://projects.volkamerlab.org/teachopencadd/talktorials/T001_query_chembl.html" target="_blank" rel="noopener noreferrer">TeachOpenCADD T001</a> и <a href="https://chembl.gitbook.io/chembl-interface-documentation/web-services/chembl-data-web-services" target="_blank" rel="noopener noreferrer">ChEMBL web services</a><small>если разрешены внешние данные</small></span><span class="tm">50 мин</span></li><li><span class="i">9</span><span><a href="https://www.alphaxiv.org/abs/2106.09553v3" target="_blank" rel="noopener noreferrer">MoLFormer</a> и <a href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr: графовые сети</a><small>эмбеддинги и графовые признаки</small></span><span class="tm">45 мин</span></li></ol>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="band alt" id="questions">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Перед стартом</p>
+      <h2 class="h-lg">Что уточнить у организаторов</h2>
+    </div>
+    <div class="split">
+      <div class="card">
+        <h3 class="h-md">Вопросы</h3>
+        <ul class="bullets" style="margin-top:6px">
+          <li>Какие колонки в данных и что считать целевой переменной: IC50, CC50, SI или готовый класс?</li>
+          <li>Что значит «без поражения иных объектов»: токсичность для клеток или селективность по другим мишеням?</li>
+          <li>Есть ли у тестовой выборки метки и как будут оценивать (метрика, формат сдачи)?</li>
+          <li>Как записаны значения вида «&gt;» и «&lt;» и в каких единицах?</li>
+          <li>Можно ли использовать внешние данные (ChEMBL и другие) и предобученные модели?</li>
+          <li>Есть ли ограничения по вычислительным ресурсам и времени инференса?</li>
+          <li>Нужна ли функция предсказания для новой молекулы или достаточно файла результатов?</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="h-md">Наши допущения</h3>
+        <ul class="bullets" style="margin-top:6px">
+          <li>Хакатон длится 24–48 часов.</li>
+          <li>В команде четыре человека, все пишут на Python.</li>
+          <li>GPU есть: своя или Colab и Kaggle.</li>
+          <li>Метрика: ROC-AUC или PR-AUC для классификации, RMSE для регрессии.</li>
+          <li>Селективным считаем SI ≥ 10, пока организаторы не скажут иначе.</li>
+          <li>Данных немного (сотни или тысячи соединений), поэтому оценку надо делать повторами.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<div id="v-digest">
+<header class="band alt" style="padding-top:72px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px">
+      <p class="eyebrow" style="color:var(--accent)">Выжимки</p>
+      <h1 class="h-lg">Каждый материал за минуту</h1>
+      <p class="lead">Для каждого источника три строки: суть, что взять в решение и на что обратить внимание. Это наш пересказ открытых страниц. Если в «Осторожно» отмечена неточность или ограничение, мы нашли их сами.</p>
+    </div>
+    <div class="filter" role="group" aria-label="Фильтр материалов">
+        <button type="button" data-f="all" aria-pressed="true">Все</button>
+        <button type="button" data-f="ru" aria-pressed="false">Русский</button>
+        <button type="button" data-f="en" aria-pressed="false">English</button>
+        <button type="button" data-f="code" aria-pressed="false">С кодом</button>
+    </div>
+  </div>
+</header>
+<section class="band" id="dg-practice" style="padding-block:56px">
+  <div class="wrap">
+    <div class="dgroup">
+      <h3 class="h-md">Код и библиотеки</h3>
+      <p class="muted">Документация, руководства и репозитории с кодом. Здесь больше всего того, что можно запустить.</p>
+      <div class="dg-grid"><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html" target="_blank" rel="noopener noreferrer">RDKit. Getting Started with the RDKit in Python</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">40 мин</span></div></div><dl><div><dt>Суть</dt><dd>Официальное руководство RDKit. Разделы: чтение и запись молекул, работа с молекулами, поиск подструктур, отпечатки и молекулярное сходство, расчёт дескрипторов, реакции.</dd></div><div><dt>Взять</dt><dd><code>Chem.MolFromSmiles</code> возвращает <code>None</code> для невалидной строки: на этом строится первая проверка данных. Дескрипторы: <code>Descriptors.MolLogP</code>, <code>Descriptors.TPSA</code>. Отпечаток Моргана: <code>AllChem.GetMorganFingerprintAsBitVect(m, 2, nBits=1024)</code>, сходство через <code>DataStructs.FingerprintSimilarity</code> (по умолчанию Tanimoto).</dd></div><div><dt>Осторожно</dt><dd class="w">По тексту страница относится к документации RDKit 2019.09.1 и показывает старый интерфейс <code>AllChem</code>, про <code>rdFingerprintGenerator</code> там нет. На странице useful_rdkit_utils для отключения предупреждений RDKit об устаревании показан <code>rdBase.BlockLogs()</code>. Сверяйтесь с документацией своей версии.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Руководство</p><h4><a href="https://education.molssi.org/python-data-science-chemistry/rdkit_descriptors/rdkit.html" target="_blank" rel="noopener noreferrer">MolSSI. Introduction to RDKit</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Урок MolSSI (автор Jessica A. Nash, 2022): создание молекул из SMILES, подсчёт атомов, добавление водородов, дескрипторы <code>MolWt</code> и <code>NumAromaticRings</code>, стереохимия, поиск подструктур через <code>GetSubstructMatches</code>.</dd></div><div><dt>Взять</dt><dd>Самый мягкий вход для тех, кто не работал с RDKit. На нём удобно разобрать, что такое молекулярный граф: атомы и связи перебираются циклом.</dd></div><div><dt>Осторожно</dt><dd class="w">Отпечатков, обучения моделей и работы с таблицами в уроке нет, это только основы RDKit.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://useful-rdkit-utils.readthedocs.io/en/latest/descriptors.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Fingerprints and Descriptors</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd>Справочник библиотеки useful_rdkit_utils 2.0.1: класс <code>Smi2Fp</code> (битовые, счётные и numpy-отпечатки), <code>RDKitDescriptors</code> (дескрипторы в DataFrame), <code>clean_and_scale_descriptors</code>, <code>Ro5Calculator</code>, <code>plot_properties</code>.</dd></div><div><dt>Взять</dt><dd><code>compare_datasets</code> усредняет top-n сходств Tanimoto между обучающими и тестовыми отпечатками: быстрая оценка, насколько тест далёк от train. Подходит и для грубой проверки области применимости.</dd></div><div><dt>Осторожно</dt><dd class="w">Это справочник без примеров, единственный фрагмент кода касается отключения предупреждений RDKit. Автор указан в копирайте страницы (Pat Walters, 2026).</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://useful-rdkit-utils.readthedocs.io/en/latest/split_utils.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Cross-validation and data splitting</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd>Модуль <code>split_utils</code>: <code>GroupKFoldShuffle</code>, <code>get_scaffold</code>, <code>get_bemis_murcko_clusters</code>, <code>get_butina_clusters</code> (порог по умолчанию 0,65 по расстоянию 1 − Tanimoto), <code>get_kmeans_clusters</code>, <code>cross_validate</code> для вложенной кросс-валидации по нескольким моделям и способам группировки.</dd></div><div><dt>Взять</dt><dd>Получайте группы функцией кластеризации и подавайте их в <code>GroupKFoldShuffle</code>: каждая группа целиком попадает в одну часть. Так можно сравнить схемы (случайная, scaffold, Butina) на одной модели.</dd></div><div><dt>Осторожно</dt><dd class="w">Примеров кода на странице нет, только сигнатуры. Порог Butina подберите под свои данные (рекомендация наша).</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://scikit-fingerprints.readthedocs.io/latest/modules/generated/skfp.model_selection.scaffold_train_test_split.html" target="_blank" rel="noopener noreferrer">scikit-fingerprints. scaffold_train_test_split</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd><code>scaffold_train_test_split</code>: детерминированное разбиение по каркасам Бемиса и Мерко, самые маленькие группы каркасов уходят в тест. Принимает SMILES или объекты RDKit, дополнительные массивы (например, метки) режутся вместе с ними.</dd></div><div><dt>Взять</dt><dd>Вызов вида <code>scaffold_train_test_split(smiles, train_size=0.8, test_size=0.2, return_indices=True)</code> даёт индексы, которые можно применить к таблице. Параметр <code>use_csk=True</code> обобщает каркас до циклического скелета (все атомы как углерод). В документации библиотеки есть также разделы про отпечатки, дескрипторы и область применимости.</dd></div><div><dt>Осторожно</dt><dd class="w">Молекулы без колец не имеют каркаса и попадают в одну общую группу. Раз в тест уходят редкие каркасы, тест получается жёстче случайного (наш вывод из описания). Что за проект в целом, на странице прямо не описано.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Репозиторий</p><h4><a href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">1 час</span></div></div><dl><div><dt>Суть</dt><dd>Репозиторий Pat Walters (лицензия MIT), 41 ноутбук. В папке <code>ml_models</code>: «Build and Test a QSAR Model in 8 Lines of Python», построение и сравнение моделей классификации и регрессии, кросс-валидация. Отдельно: кластеризация (Butina, K-Means), анализ каркасов, два ноутбука по Chemprop.</dd></div><div><dt>Взять</dt><dd>Начните с ноутбука про QSAR в 8 строк, затем с сравнения моделей: это готовый шаблон, куда подставляются ваши данные. Ноутбуки по Chemprop пригодятся роли 3.</dd></div><div><dt>Осторожно</dt><dd class="w">Содержание ноутбуков мы выводим по их названиям, сами ноутбуки не открывали. Отдельных руководств по очистке данных и разбиению в списке нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://molvs.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer">MolVS: Molecule Validation and Standardization</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd>Инструмент на базе RDKit: валидация, нормализация функциональных групп, реионизация, нейтрализация зарядов, канонизация таутомеров, удаление солей и растворителей, получение «родительской» структуры.</dd></div><div><dt>Взять</dt><dd>Пример со страницы: <code>from molvs import standardize_smiles</code>, затем <code>standardize_smiles(...)</code> возвращает нормализованную строку. Страница задаёт хороший список того, что стоит проверить в данных.</dd></div><div><dt>Осторожно</dt><dd class="w">Документация версии 0.1.1 с копирайтом 2016, о поддержке на странице ничего не сказано. Проверьте совместимость с вашей версией RDKit. В самом RDKit есть модуль <code>rdMolStandardize</code>, его документацию мы не открывали.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://catboost.ai/docs/en/concepts/python-quickstart" target="_blank" rel="noopener noreferrer">CatBoost. Python quick start</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd>Быстрый старт CatBoost: <code>CatBoostClassifier</code> (<code>fit</code>, <code>predict</code>, <code>predict_proba</code>) и <code>CatBoostRegressor</code> с <code>Pool</code>.</dd></div><div><dt>Взять</dt><dd>Каркас: <code>CatBoostClassifier(iterations=..., depth=..., learning_rate=..., loss_function='Logloss')</code>, затем <code>fit</code> и <code>predict_proba</code>. Для регрессии <code>loss_function='RMSE'</code>.</dd></div><div><dt>Осторожно</dt><dd class="w">В примерах учебные значения (<code>iterations=2</code>, <code>depth=2</code>), для настоящей модели их надо менять. Установки, GPU и сохранения модели на странице нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Репозиторий</p><h4><a href="https://github.com/optuna/optuna-examples/blob/main/README.md" target="_blank" rel="noopener noreferrer">Optuna Examples (README на GitHub)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd>README репозитория optuna-examples со списком примеров. Градиентный бустинг: <code>lightgbm/lightgbm_simple.py</code>, <code>lightgbm/lightgbm_tuner_simple.py</code>, <code>catboost/catboost_simple.py</code>, <code>xgboost/xgboost_simple.py</code>. scikit-learn: <code>sklearn/sklearn_optuna_search_cv_simple.py</code> (<code>OptunaSearchCV</code>).</dd></div><div><dt>Взять</dt><dd>Откройте <code>catboost_simple.py</code> или <code>lightgbm_simple.py</code> и подставьте свои признаки. Метрику для оптимизации стоит брать PR-AUC на scaffold-фолдах (рекомендация наша). Есть варианты с ранней отсечкой неудачных попыток (pruning).</dd></div><div><dt>Осторожно</dt><dd class="w">README это только список, сам код лежит в файлах. Рекомендаций по молекулярным данным в нём нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html" target="_blank" rel="noopener noreferrer">SHAP. TreeExplainer</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd><code>shap.TreeExplainer</code> реализует Tree SHAP для ансамблей деревьев: XGBoost, LightGBM, CatBoost, PySpark и большинства деревьев scikit-learn.</dd></div><div><dt>Взять</dt><dd>Создать объясняющий объект по модели и вызвать <code>shap_values(X)</code> на нужных молекулах. Для режима interventional нужен фон примерно из 100–1000 объектов. Для отпечатков подпишите биты через <code>feature_names</code>, чтобы связать их с подструктурами (рекомендация наша).</dd></div><div><dt>Осторожно</dt><dd class="w">Значения даны в пространстве выхода модели (для бинарного XGBoost это log-odds, не вероятность). Классификаторы scikit-learn возвращают значения по классам, XGBoost и LightGBM одно. Параметр <code>approximate</code> устарел и будет удалён в v0.49.0. Примеров кода на странице нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score" target="_blank" rel="noopener noreferrer">scikit-learn. average_precision_score</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd>Средняя точность (AP) как сводка кривой точность-полнота: сумма (R<sub>n</sub> − R<sub>n−1</sub>) · P<sub>n</sub> по порогам.</dd></div><div><dt>Взять</dt><dd><code>average_precision_score(y_true, y_score)</code> принимает оценки модели (вероятности), а не метки. Пример со страницы даёт 0,83.</dd></div><div><dt>Осторожно</dt><dd class="w">AP не равна площади под PR-кривой, посчитанной по трапециям: линейная интерполяция даёт слишком оптимистичную оценку.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Страница пакета</p><h4><a href="https://pypi.org/project/chemprop/" target="_blank" rel="noopener noreferrer">PyPI. chemprop</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">5 мин</span></div></div><dl><div><dt>Суть</dt><dd>Страница пакета chemprop на PyPI: версия 2.3.1 от 4 августа 2026, Python от 3.11 до 3.14, лицензия MIT.</dd></div><div><dt>Взять</dt><dd><code>pip install chemprop</code>. Проверьте версию Python заранее, до начала хакатона.</dd></div><div><dt>Осторожно</dt><dd class="w">Команд обучения на странице нет, они в документации (две следующие карточки).</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop. Документация</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">30 мин</span></div></div><dl><div><dt>Суть</dt><dd>Документация Chemprop 2.3.1, фреймворка на PyTorch для message-passing нейросетей. Руководства по CLI: обучение, предсказание, оптимизация гиперпараметров, отпечатки (fingerprint). Ноутбуки: многозадачные модели, дообучение с CheMeleon, оценка неопределённости, интерпретируемость, дополнительные признаки и дескрипторы, подбор гиперпараметров через RayTune или Optuna.</dd></div><div><dt>Взять</dt><dd>Для нашей задачи полезны ноутбуки про multitask (активность и токсичность вместе), extra features (подмешать дескрипторы RDKit) и uncertainty. Дообучение CheMeleon позволяет стартовать с предобученной модели, а не с нуля.</dd></div><div><dt>Осторожно</dt><dd class="w">На главной странице нет команд и формата входных данных, лицензия не указана (MIT указан на PyPI). Что именно такое CheMeleon, по этой странице не ясно, читайте ноутбук.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Руководство</p><h4><a href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop. CLI: обучение</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Руководство по обучению из командной строки. Базовая команда: <code>chemprop train --data-path ... --task-type ... --output-dir ...</code>. SMILES по умолчанию берутся из первого столбца, цели из остальных.</dd></div><div><dt>Взять</dt><dd>Классификация: <code>--task-type classification</code> (бинарные метки 0/1, потери BCE). Scaffold-разбиение: <code>--split-type scaffold_balanced</code>. Эпохи: <code>--epochs</code> (по умолчанию 50), ансамбль: <code>--ensemble-size</code>, повторы: <code>--num-replicates</code>. Свои разбиения: <code>--splits-column split</code> или <code>--splits-file splits.json</code>.</dd></div><div><dt>Осторожно</dt><dd class="w">По умолчанию разбиение случайное 80/10/10, scaffold надо включить явно. Пример в документации использует тестовый файл из репозитория Chemprop.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Руководство</p><h4><a href="https://chemprop.readthedocs.io/en/latest/tutorial/python/data/splitting.html" target="_blank" rel="noopener noreferrer">Chemprop. Разбиение данных (Python)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">15 мин</span></div></div><dl><div><dt>Суть</dt><dd>Руководство по разбиению данных в Python-интерфейсе: типы <code>scaffold_balanced</code>, <code>random_with_repeated_smiles</code>, <code>random</code> (по умолчанию), <code>kennard_stone</code>, <code>kmeans</code> (реализация через библиотеку astartes). Функции <code>make_split_indices</code> и <code>split_data_by_indices</code>.</dd></div><div><dt>Взять</dt><dd><code>random_with_repeated_smiles</code> держит повторяющиеся SMILES в одной части: полезно, если одно соединение измерено в нескольких опытах. <code>kmeans</code> даёт разбиение по структуре.</dd></div><div><dt>Осторожно</dt><dd class="w">Примеры на странице построены на искусственных цепочках углерода и случайных значениях, не на реальных данных. Формат файла разбиений для CLI смотрите в руководстве по обучению.</dd></div></dl></article></div>
+    </div>
+  </div>
+</section>
+<section class="band alt" id="dg-data" style="padding-block:56px">
+  <div class="wrap">
+    <div class="dgroup">
+      <h3 class="h-md">Данные и базы</h3>
+      <p class="muted">Как получить и подготовить данные об активности, если организаторы разрешат внешние источники.</p>
+      <div class="dg-grid"><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Документация</p><h4><a href="https://chembl.gitbook.io/chembl-interface-documentation/web-services/chembl-data-web-services" target="_blank" rel="noopener noreferrer">ChEMBL. Web services</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Документация веб-сервисов ChEMBL: ресурсы <code>activity</code>, <code>molecule</code>, <code>assay</code>, <code>target</code>, фильтры вида <code>[resource]?[field]__[filter_type]=[value]</code>, постраничная выдача, поиск по подструктуре и сходству. Клиент: <code>pip install chembl_webresource_client</code>.</dd></div><div><dt>Взять</dt><dd>Если организаторы разрешат внешние данные, можно собрать дополнительные измерения IC50 и CC50. Фильтр по типу активности строится по тому же шаблону (поле <code>standard_type</code>), но для IC50 и CC50 примера на странице нет, проверьте на живом API.</dd></div><div><dt>Осторожно</dt><dd class="w">Кода в примерах нет, IC50 и CC50 на странице не фигурируют (пример с clearance). Упомянута версия ChEMBL_20, она устарела, актуальную показывает эндпоинт <code>status</code>. Выгрузок целиком на странице нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Руководство</p><h4><a href="https://projects.volkamerlab.org/teachopencadd/talktorials/T001_query_chembl.html" target="_blank" rel="noopener noreferrer">TeachOpenCADD T001. Данные из ChEMBL</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">30 мин</span></div></div><dl><div><dt>Суть</dt><dd>Ноутбук TeachOpenCADD T001 (лаборатория Volkamer, Charité и FU Berlin): запрос к ChEMBL через <code>chembl_webresource_client</code> для мишени EGFR, отбор измерений IC50 с точным значением (relation «=») в нМ, удаление дубликатов, объединение с таблицей структур, сохранение в CSV на зафиксированной версии ChEMBL 27.</dd></div><div><dt>Взять</dt><dd>Формула <code>pIC50 = 9 − log10(IC50 в нМ)</code> и приём «оставить только relation «=» и единицы нМ» переносятся на наши данные. Для CC50 логика та же.</dd></div><div><dt>Осторожно</dt><dd class="w">Пример для киназы EGFR, не для вирусов. Очистку структур ноутбук не делает, а отсылает к Standardiser и MolVS. Правило Липински вынесено в следующий ноутбук (T002).</dd></div></dl></article></div>
+    </div>
+  </div>
+</section>
+<section class="band" id="dg-ru" style="padding-block:56px">
+  <div class="wrap">
+    <div class="dgroup">
+      <h3 class="h-md">На русском</h3>
+      <p class="muted">Русскоязычных материалов именно про QSAR и противовирусные соединения мало. Здесь лучшее из найденного: бустинг, графовые сети, метрики, программа курса.</p>
+      <div class="dg-grid"><article class="dg" data-lang="ru" data-code="1"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr. Предсказание растворимости графовыми свёрточными сетями</a></h4></div><div class="tags"><span class="chip soft">RU</span><span class="chip soft">код</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Проект школьников СУНЦ МГУ с куратором из JetBrains Research (блог Питерской Вышки, 1 июля 2021): предсказание растворимости по SMILES. База ESOL из 1128 молекул, бейзлайн XGBoost на 2D-дескрипторах RDKit, затем графовая свёрточная сеть на PyTorch Geometric.</dd></div><div><dt>Взять</dt><dd>Готовая схема сравнения: сначала бустинг на дескрипторах, потом граф. Признаки атомов: атомный номер, число водородов, степень, заряд, хиральность, гибридизация, ароматичность, масса. Интерпретация по битам обученного отпечатка (гидроксильные и ароматические группы) пригодится как идея для защиты.</dd></div><div><dt>Осторожно</dt><dd class="w">Это школьный проект про растворимость, не про противовирусную активность. Графовые сети оказались лишь немного лучше бустинга, а авторы сами пишут, что на малой выборке итог зависит от разбиения.</dd></div></dl></article><article class="dg" data-lang="ru" data-code="1"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://habr.com/ru/post/527554" target="_blank" rel="noopener noreferrer">Habr. Быстрый градиентный бустинг с CatBoost</a></h4></div><div class="tags"><span class="chip soft">RU</span><span class="chip soft">код</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Перевод статьи Derrick Mwiti с KDnuggets на Habr (блог OTUS, 11 ноября 2020). На примере <code>CatBoostRegressor</code>: обучение с графиками, кросс-валидация через <code>Pool</code> и <code>cv()</code>, <code>grid_search()</code>, <code>plot_tree()</code>, справочник параметров.</dd></div><div><dt>Взять</dt><dd><code>grid_search()</code> и <code>cv()</code> как первый способ подобрать параметры до Optuna. Объяснение симметричных деревьев CatBoost пригодится для вопросов жюри.</dd></div><div><dt>Осторожно</dt><dd class="w">Перевод 2020 года, про Optuna там нет. Пример для регрессии, для классификации придётся сменить функцию потерь.</dd></div></dl></article><article class="dg" data-lang="ru" data-code="1"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://habr.com/ru/post/953158" target="_blank" rel="noopener noreferrer">Habr. Борьба с дисбалансом классов. Стандартные методы</a></h4></div><div class="tags"><span class="chip soft">RU</span><span class="chip soft">код</span><span class="chip soft">17 мин</span></div></div><dl><div><dt>Суть</dt><dd>Статья Александра Приходько (блог KozhinDev, 3 октября 2025): accuracy, Precision, Recall, F1, ROC AUC и PR AUC при дисбалансе, подбор порога на валидации вместо 0,5, встроенные веса классов в LogisticRegression, XGBoost, LightGBM и CatBoost.</dd></div><div><dt>Взять</dt><dd>Выбирайте порог на валидационной части и сочетайте его с весами классов; для редких активных молекул смотрите PR AUC и F1 по миноритарному классу. Функция <code>optimize_threshold</code> перебирает пороги по квантилям вероятностей.</dd></div><div><dt>Осторожно</dt><dd class="w">Все опыты на одном синтетическом наборе (100 тысяч объектов, 10 признаков), на реальных данных результат может отличаться. Подбор порога отнимает около 20% обучающих данных. Ресемплинг разобран в следующих частях серии, их мы не читали.</dd></div></dl></article><article class="dg" data-lang="ru" data-code="0"><div class="dg-top"><div><p class="kind">Руководство</p><h4><a href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=ru" target="_blank" rel="noopener noreferrer">Google ML Crash Course. ROC и AUC</a></h4></div><div class="tags"><span class="chip soft">RU</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd>Страница курса Google по машинному обучению: ROC-кривая показывает качество модели при всех порогах (TPR против FPR), AUC равна вероятности того, что случайный положительный пример получит оценку выше случайного отрицательного.</dd></div><div><dt>Взять</dt><dd>Порог выбирают по цене ошибки: если важнее не пропустить активное соединение, берут точку с большим TPR. При сильном дисбалансе страница советует кривые точность-полнота.</dd></div><div><dt>Осторожно</dt><dd class="w">Общая страница без химии и кода. Раздел про PR-кривые помечен как необязательный.</dd></div></dl></article><article class="dg" data-lang="ru" data-code="0"><div class="dg-top"><div><p class="kind">Программа курса</p><h4><a href="https://static.centraluniversity.ru/documents/legal/education/programm/online-form/ii-v-biotehe/b1-o-dv-04-01-15-01-hemoinformatika-i-mashinnoe-obuchenie-3-sem.pdf" target="_blank" rel="noopener noreferrer">Центральный университет. Программа курса «Хемоинформатика и машинное обучение»</a></h4></div><div class="tags"><span class="chip soft">RU</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd>Рабочая программа курса «Хемоинформатика и машинное обучение» (Центральный университет, набор 2026): представление структур (SMILES, InChI, графы, 3D), дескрипторы, RDKit, построение и валидация QSAR и QSPR с принципами OECD, нейросети, кластеризация химического пространства, ADMET.</dd></div><div><dt>Взять</dt><dd>Список тем как чек-лист пробелов. Инструменты из программы: RDKit, Open Babel, Mordred, CDK, scikit-learn, DeepChem; базы: ChEMBL, PubChem, ZINC.</dd></div><div><dt>Осторожно</dt><dd class="w">Это программа, а не учебник. Список литературы в ней общий по биотехнологии и молекулярной биологии, по хемоинформатике в нём ничего нет.</dd></div></dl></article></div>
+    </div>
+  </div>
+</section>
+<section class="band alt" id="dg-papers" style="padding-block:56px">
+  <div class="wrap">
+    <div class="dgroup">
+      <h3 class="h-md">Статьи и исследования</h3>
+      <p class="muted">Теория: как валидировать, какие модели брать и что уже сделано для противовирусных соединений.</p>
+      <div class="dg-grid"><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://research.chalmers.se/en/publication/530690" target="_blank" rel="noopener noreferrer">Bender et al. Evaluation guidelines for ML tools in the chemical sciences (2022)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">40 мин</span></div></div><dl><div><dt>Суть</dt><dd>Bender, Schneider, Segler, Walters, Engkvist, Rodrigues (Nature Reviews Chemistry, 2022, том 6, страницы 428–442). Авторы предлагают стандартизировать сравнение методов и дают чек-лист ретроспективных и проспективных проверок.</dd></div><div><dt>Взять</dt><dd>Основа для слайда «как мы проверяли»: чек-лист и принцип полной отчётности. Подходит для раздела об ограничениях.</dd></div><div><dt>Осторожно</dt><dd class="w">Мы видели только аннотацию на странице Chalmers. Конкретные рекомендации по разбиениям, метрикам и статистическим тестам не проверены; полный текст по DOI 10.1038/s41570-022-00391-9.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Препринт</p><h4><a href="https://arxiv.org/pdf/2607.10729" target="_blank" rel="noopener noreferrer">Zheng et al. Beyond Scaffold Splits (arXiv 2607.10729)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">25 мин</span></div></div><dl><div><dt>Суть</dt><dd>Препринт «Beyond Scaffold Splits: Structural-Frontier Evaluation Reveals Hidden Failures in ADMET Models». Предлагают дополнительный тест на самых разреженных и физико-химически далёких группах каркасов. Медианная ошибка на таком тесте на 87% выше, чем на сопоставимом scaffold-тесте.</dd></div><div><dt>Взять</dt><dd>Идея для нашей валидации: помимо scaffold split добавить тест на наименее похожие молекулы и сообщать метрики по группам новизны. Сравнивать разбиения при одинаковой доле теста.</dd></div><div><dt>Осторожно</dt><dd class="w">Данные из ADMET (BBB, HIA, CYP2D6, связывание с белками плазмы, растворимость, DILI), не противовирусные. Основная модель: MLP на отпечатках Моргана в 1024 бита. Дата публикации на странице не указана, рецензии нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://arxiv.org/pdf/2102.09548" target="_blank" rel="noopener noreferrer">Huang et al. Therapeutics Data Commons (arXiv 2102.09548)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">25 мин</span></div></div><dl><div><dt>Суть</dt><dd>Huang, Fu, Gao и др.: платформа TDC с наборами данных и задачами для разработки лекарств (на момент статьи 66 наборов в 22 задачах), пять типов разбиений: случайное, по scaffold, cold-start, временное, комбинированное.</dd></div><div><dt>Взять</dt><dd>Обоснование scaffold split для питча: статья называет его более трудным, чем случайное, и более реалистичным. Python-пакет PyTDC даёт готовые разбиения.</dd></div><div><dt>Осторожно</dt><dd class="w">Версия 2021 года, текущий API мог измениться, примеров кода в тексте нет. Противовирусных наборов под нашу задачу мы в тексте не проверяли.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Препринт</p><h4><a href="https://www.cambridge.org/engage/coe/article-details/68bb5b5b23be8e43d65c5cc5" target="_blank" rel="noopener noreferrer">Graff et al. Chemprop v2 (Cambridge Open Engage, 2025)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">20 мин</span></div></div><dl><div><dt>Суть</dt><dd>Graff et al., 15 сентября 2025: Chemprop переписан с нуля, модель D-MPNN, точность как у v1, примерно вдвое быстрее и втрое экономнее по памяти, масштабирование на несколько GPU, новые ноутбуки и документация.</dd></div><div><dt>Взять</dt><dd>Достаточно, чтобы объяснить жюри, что такое D-MPNN и почему выбрана именно эта реализация.</dd></div><div><dt>Осторожно</dt><dd class="w">Рабочая версия без рецензирования. Установки и лицензии на странице нет (они на PyPI). Статью про первую версию мы открыть не смогли: страница потребовала проверку браузера.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Препринт</p><h4><a href="https://www.alphaxiv.org/abs/2106.09553v3" target="_blank" rel="noopener noreferrer">Ross et al. MoLFormer (arXiv 2106.09553)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">25 мин</span></div></div><dl><div><dt>Суть</dt><dd>Ross et al. (IBM Research): трансформер-энкодер с ротационными позиционными эмбеддингами и линейным вниманием, предобучение на примерно 1,1 млрд неразмеченных молекул из PubChem и ZINC, проверка на задачах MoleculeNet.</dd></div><div><dt>Взять</dt><dd>Кандидат для эмбеддингов: SMILES превращается в вектор, на нём обучают бустинг или линейную модель. На шести классификационных наборах MoLFormer-XL заметно лучше базовых в трёх и сопоставим в остальных.</dd></div><div><dt>Осторожно</dt><dd class="w">Мы читали страницу-обзор alphaxiv, не саму статью. Выложены ли код и веса, на ней не указано, проверьте до начала использования.</dd></div></dl></article><article class="dg" data-lang="en" data-code="1"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip soft">30 мин</span></div></div><dl><div><dt>Суть</dt><dd>Xu, Xu, Zhang, Chen, Zheng, Huang (Communications Chemistry 8, 189, 2025). Модели предсказывают вирус-селективные и широкоспектральные противовирусные соединения: отпечатки ECFP4 на 1024 бита, Naive Bayes, SVM, нейросеть, случайный лес, XGBoost, консенсус RF и XGB. Отдельная модель цитотоксичности на контрольных соединениях Tox21.</dd></div><div><dt>Взять</dt><dd>Готовая идея под «действует на вирус без вреда прочему»: активность и токсичность моделируются отдельно, затем сводятся. Метрики: AUC-ROC, balanced accuracy, MCC; у вирус-селективных моделей RF даёт AUC-ROC 0,83, XGB 0,80. Входные данные и код на GitHub (TX-2017/antivirals_prediction и TX-2017/machine-learning).</dd></div><div><dt>Осторожно</dt><dd class="w">Осповакцина (vaccinia) в статье не упоминается, натуральная оспа только в списке сокращений рисунка. Разбиения случайные 70/30 с 20 повторами; на scaffold-разбиении цифры, скорее всего, будут ниже (наше ожидание, не из статьи).</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://dspace.kpfu.ru/xmlui/handle/net/129749" target="_blank" rel="noopener noreferrer">Klimenko et al. DNA intercalating antiviral agents against VACV (2017)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">25 мин</span></div></div><dl><div><dt>Суть</dt><dd>Klimenko et al., 2017 (ISSN 0960-894X, запись репозитория КФУ): виртуальный скрининг DNA-интеркаляторов против VACV. Фармакофорную и QSAR-модель построили на данных про вирус везикулярного стоматита (VSV), отобрали из базы в 245 молекул 12 хитов, синтезировали и проверили против VACV; два соединения показали высокую активность при низкой цитотоксичности.</dd></div><div><dt>Взять</dt><dd>Прямой пример предметной области: отбор по активности против VACV вместе с оценкой цитотоксичности. Годится как контекст для вводной части питча.</dd></div><div><dt>Осторожно</dt><dd class="w">Доступна только запись с аннотацией: структур, значений потенции и деталей модели там нет.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Препринт</p><h4><a href="https://arxiv.org/pdf/2605.04265" target="_blank" rel="noopener noreferrer">Elton, Estep. Benchmarking open-source tools for antiviral discovery (arXiv 2605.04265)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">30 мин</span></div></div><dl><div><dt>Суть</dt><dd>Elton, Estep (май 2026): сравнение docking-программ и ML-моделей по предсказанию аффинности. Собран набор из 43 005 измерений для пар вирусный белок и лиганд из BindingDB и других источников.</dd></div><div><dt>Взять</dt><dd>Главный вывод для нас: очистка данных важна не меньше выбора модели; дообучение на чистом противовирусном наборе подняло корреляцию с r≈0,5 до r≈0,7. В тексте упомянуты базы DrugVirus.info и AntiviralDB, где собраны значения CC50 и TC50.</dd></div><div><dt>Осторожно</dt><dd class="w">Работа про связывание с белком, а не про IC50 и CC50 в клетках. Осповакцина в прочитанной части не упоминается; мы видели лишь фрагмент без приложений.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Статья</p><h4><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7162012" target="_blank" rel="noopener noreferrer">QSAR противовирусной активности на данных ChEMBL (PMC7162012)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">25 мин</span></div></div><dl><div><dt>Суть</dt><dd>Статья PMC7162012: процент ингибирования и SMILES из ChEMBL, около 18 000 дескрипторов и отпечатков (PaDEL), отбор признаков в Weka, SVM, 10-кратная кросс-валидация и независимая проверка, область применимости по графикам Вильямса. Есть общая модель по 26 вирусам.</dd></div><div><dt>Взять</dt><dd>Пример того, как собирают противовирусный QSAR-набор из ChEMBL. Для общей модели: Pearson r 0,71 в 10-fold CV, MCC 0,71 для классификации.</dd></div><div><dt>Осторожно</dt><dd class="w">Название и авторов мы по тексту страницы подтвердить не смогли. IC50, CC50 и индекс селективности там не рассматриваются, цитотоксичность не оценивалась. Осповакцины в общем наборе мало: 12 и 22 соединения для записей vaccinia virus и vaccinia virus WR.</dd></div></dl></article><article class="dg" data-lang="en" data-code="0"><div class="dg-top"><div><p class="kind">Блог</p><h4><a href="https://variational.ai/blog/applicability-domains-are-common-in-qsar-but-irrelevant-for-conventional-ml-tasks/" target="_blank" rel="noopener noreferrer">Rolfe. Applicability domains in QSAR (Variational AI, 2024)</a></h4></div><div class="tags"><span class="chip soft">EN</span><span class="chip soft">10 мин</span></div></div><dl><div><dt>Суть</dt><dd>Jason Rolfe, блог Variational AI, 14 сентября 2024. Область применимости это участок химического пространства около соединений с измеренной активностью; обычно её задают расстоянием Tanimoto на отпечатках Моргана до обучающей выборки с порогами 0,4 или 0,6.</dd></div><div><dt>Взять</dt><dd>Простая проверка: считать расстояние до ближайшего соседа из train и сравнивать с ошибкой модели. Автор показывает, что ошибка растёт с расстоянием для разных алгоритмов.</dd></div><div><dt>Осторожно</dt><dd class="w">Блог компании, которая продаёт собственную модель, поэтому вывод о том, что границы условны, стоит взвешивать. Обещанные доказательства автор отнёс к будущему тексту.</dd></div></dl></article></div>
+    </div>
+  </div>
+</section>
+<section class="band alt" style="padding-block:40px 56px"><div class="wrap"><p class="muted" style="font-size:15px"><a href="#plan">Вернуться к плану</a></p></div></section>
+</div>
+<div id="v-roles">
+<header class="band alt" style="padding-top:72px;padding-bottom:40px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:0">
+      <p class="eyebrow" style="color:var(--accent)">По ролям</p>
+      <h1 class="h-lg">Что делать и читать каждому</h1>
+      <p class="lead">Задачи каждой роли разбиты на подгруппы. Для каждой подгруппы есть теория (статьи и обзоры) и практика (документация, туториалы, репозитории с кодом). В первые два часа все читают общий минимум, потом каждый идёт в свой список.</p>
+    </div>
+    <div class="cta" style="margin-top:20px">
+      <a class="more" href="#r-1">Данные</a><a class="more" href="#r-2">Признаки и модели</a><a class="more" href="#r-3">Нейросети</a><a class="more" href="#r-4">Валидация и питч</a>
+    </div>
+  </div>
+</header>
+<section class="band" id="r-1" style="padding-block:56px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px">
+      <p class="eyebrow">Роль 1</p>
+      <h2 class="h-lg">Данные и химия</h2>
+      <p class="lead">Превращают таблицу организаторов в чистые данные и понятный таргет.</p>
+      <p class="deliver"><b>На выходе:</b> <code>data/clean.csv</code> (id, smiles_std, ic50, cc50, si, label) и журнал удалённых строк.</p>
+    </div>
+    <div class="card" style="margin-bottom:40px"><p class="k">Первые шаги</p><ol class="bullets" style="margin-top:6px"><li>Получить данные организаторов и открыть их в pandas.</li><li>Проверить SMILES через RDKit, посчитать долю невалидных.</li><li>Решить, что считать селективным соединением, и зафиксировать порог.</li><li>Передать <code>clean.csv</code> всем остальным как можно раньше, даже в сыром виде.</li></ol></div>
+    <div class="sub" id="r-1-1">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 1.1</p><h3 class="h-md">Постановка и таргет</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Выяснить у организаторов формат данных, метрику и смысл фразы «без поражения иных объектов».</li><li>Определить таргеты: pIC50, pCC50, SI = CC50 / IC50 и бинарную метку «селективен».</li><li>Решить, как обращаться со значениями вида «&gt;» и «&lt;» и с повторными измерениями одного соединения.</li><li>Зафиксировать порог для метки. Стартовое допущение: SI ≥ 10, подтвердить у организаторов.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>Отдельная модель цитотоксичности рядом с моделью активности: подсказка, как строить таргет селективности.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li><li class="res"><div><a class="t" href="https://dspace.kpfu.ru/xmlui/handle/net/129749" target="_blank" rel="noopener noreferrer">Klimenko et al. DNA intercalating antiviral agents against VACV (2017)</a><p>Пример по VACV: активность и цитотоксичность оцениваются вместе.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res"><div><a class="t" href="https://arxiv.org/pdf/2605.04265" target="_blank" rel="noopener noreferrer">Elton, Estep. Benchmarking open-source tools for antiviral discovery (arXiv 2605.04265)</a><p>Базы DrugVirus.info и AntiviralDB хранят CC50 и TC50; вывод про важность подготовки данных.</p></div><div class="meta"><span class="chip soft">EN</span><span>30 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://projects.volkamerlab.org/teachopencadd/talktorials/T001_query_chembl.html" target="_blank" rel="noopener noreferrer">TeachOpenCADD T001. Данные из ChEMBL</a><p>Формула pIC50 и фильтр «relation =», единицы нМ: переносятся на наши данные.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-1-2">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 1.2</p><h3 class="h-md">Очистка и стандартизация структур</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Убрать невалидные SMILES, соли и растворители, нейтрализовать заряды.</li><li>Найти дубликаты и противоречивые измерения одного соединения.</li><li>Привести единицы измерения (нМ, мкМ) к одним.</li><li>Вести журнал: сколько строк и почему удалено.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://arxiv.org/pdf/2605.04265" target="_blank" rel="noopener noreferrer">Elton, Estep. Benchmarking open-source tools for antiviral discovery (arXiv 2605.04265)</a><p>Очистка и разбор данных как главный источник выигрыша.</p></div><div class="meta"><span class="chip soft">EN</span><span>30 мин</span></div></li><li class="res"><div><a class="t" href="https://static.centraluniversity.ru/documents/legal/education/programm/online-form/ii-v-biotehe/b1-o-dv-04-01-15-01-hemoinformatika-i-mashinnoe-obuchenie-3-sem.pdf" target="_blank" rel="noopener noreferrer">Центральный университет. Программа курса «Хемоинформатика и машинное обучение»</a><p>Чек-лист тем: представления структур, дескрипторы, принципы валидации.</p></div><div class="meta"><span class="chip soft">RU</span><span>10 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://molvs.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer">MolVS: Molecule Validation and Standardization</a><p>Проверка и стандартизация молекул: соли, заряды, таутомеры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res"><div><a class="t" href="https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html" target="_blank" rel="noopener noreferrer">RDKit. Getting Started with the RDKit in Python</a><p>Проверка валидности через MolFromSmiles и работа с молекулой.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>40 мин</span></div></li><li class="res"><div><a class="t" href="https://education.molssi.org/python-data-science-chemistry/rdkit_descriptors/rdkit.html" target="_blank" rel="noopener noreferrer">MolSSI. Introduction to RDKit</a><p>Урок из курса Python for Data Science in Chemistry: молекулы из SMILES, дескрипторы, подструктуры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-1-3">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 1.3</p><h3 class="h-md">Анализ данных и внешние источники</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Распределения pIC50, pCC50, SI; баланс классов; выбросы.</li><li>Размеры каркасов и кластеров: передать роли 4 для разбиений.</li><li>Если организаторы разрешат, собрать дополнительные данные и убедиться, что они не пересекаются с тестом.</li><li>Нарисовать пару молекул из каждого кластера для отчёта.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7162012" target="_blank" rel="noopener noreferrer">QSAR противовирусной активности на данных ChEMBL (PMC7162012)</a><p>Как собирают противовирусный набор из ChEMBL и что делают с признаками.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://chembl.gitbook.io/chembl-interface-documentation/web-services/chembl-data-web-services" target="_blank" rel="noopener noreferrer">ChEMBL. Web services</a><p>REST API ChEMBL и Python-клиент: как достать активности и структуры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>20 мин</span></div></li><li class="res"><div><a class="t" href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a><p>Ноутбуки про кластеризацию (Butina, K-Means) и анализ каркасов.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>1 час</span></div></li><li class="res"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/descriptors.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Fingerprints and Descriptors</a><p>plot_properties и RDKitProperties для распределений.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li></ul></div></div>
+  </div>
+</div>
+  </div>
+</section>
+<section class="band alt" id="r-2" style="padding-block:56px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px">
+      <p class="eyebrow">Роль 2</p>
+      <h2 class="h-lg">Признаки и классические модели</h2>
+      <p class="lead">Строят признаки и быстрый сильный бейзлайн, с которым сравнивают всё остальное.</p>
+      <p class="deliver"><b>На выходе:</b> матрицы признаков в <code>features/</code> и предсказания каждой модели на val и test в <code>preds/</code>.</p>
+    </div>
+    <div class="card" style="margin-bottom:40px"><p class="k">Первые шаги</p><ol class="bullets" style="margin-top:6px"><li>Посчитать отпечаток Моргана (счётный, радиус 2) и дескрипторы RDKit для <code>clean.csv</code>.</li><li>Обучить CatBoost на scaffold-разбиении и записать метрики.</li><li>Сравнить три набора признаков одной и той же моделью.</li><li>Сохранить предсказания в общий формат для ансамбля.</li></ol></div>
+    <div class="sub" id="r-2-1">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 2.1</p><h3 class="h-md">Признаки</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Отпечатки Моргана (биты и счётчики, радиус 2), MACCS.</li><li>Дескрипторы RDKit с удалением констант и масштабированием.</li><li>Сохранить признаки файлами, чтобы другие роли не пересчитывали.</li><li>Сравнить наборы признаков одним и тем же бустингом.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>Отпечатки ECFP4 на 1024 бита как рабочий стандарт для антивирусных моделей.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr. Предсказание растворимости графовыми свёрточными сетями</a><p>Бейзлайн на дескрипторах RDKit против графовой сети, по-русски.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/descriptors.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Fingerprints and Descriptors</a><p>Готовые функции Pat Walters: отпечатки из SMILES, дескрипторы в pandas, сравнение train и test по Tanimoto.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res"><div><a class="t" href="https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html" target="_blank" rel="noopener noreferrer">RDKit. Getting Started with the RDKit in Python</a><p>Официальное введение: чтение молекул, подструктуры, отпечатки и сходство, дескрипторы.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>40 мин</span></div></li><li class="res"><div><a class="t" href="https://education.molssi.org/python-data-science-chemistry/rdkit_descriptors/rdkit.html" target="_blank" rel="noopener noreferrer">MolSSI. Introduction to RDKit</a><p>Урок из курса Python for Data Science in Chemistry: молекулы из SMILES, дескрипторы, подструктуры.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-2-2">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 2.2</p><h3 class="h-md">Бейзлайны</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Случайный лес, CatBoost, LightGBM, логистическая регрессия или SVM на одних признаках.</li><li>Отдельные модели на IC50 и CC50 и модель на метку селективности: сравнить подходы.</li><li>Фиксировать результаты на разбиениях роли 4.</li><li>Записать таблицу: модель, признаки, метрики.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>Сравнение RF, XGBoost, SVM, NN и Naive Bayes на антивирусных данных.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://catboost.ai/docs/en/concepts/python-quickstart" target="_blank" rel="noopener noreferrer">CatBoost. Python quick start</a><p>Классификатор и регрессор CatBoost в нескольких строках, объект Pool.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li><li class="res"><div><a class="t" href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a><p>Ноутбуки про построение и сравнение моделей классификации и регрессии.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>1 час</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/527554" target="_blank" rel="noopener noreferrer">Habr. Быстрый градиентный бустинг с CatBoost</a><p>Перевод обзора CatBoost: fit, cv, grid_search, параметры.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-2-3">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 2.3</p><h3 class="h-md">Подбор гиперпараметров</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Optuna с целью PR-AUC на scaffold-фолдах.</li><li>Ограничить время поиска и число попыток.</li><li>Сохранять лучшие параметры в файл, чтобы повторить результат.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://github.com/optuna/optuna-examples/blob/main/README.md" target="_blank" rel="noopener noreferrer">Optuna Examples (README на GitHub)</a><p>Индекс примеров Optuna для LightGBM, CatBoost, XGBoost и scikit-learn.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/527554" target="_blank" rel="noopener noreferrer">Habr. Быстрый градиентный бустинг с CatBoost</a><p>grid_search и cv как первый, более простой способ.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-2-4">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 2.4</p><h3 class="h-md">Дисбаланс и порог</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Веса классов в бустинге.</li><li>Порог по валидации, не по тесту.</li><li>Сравнить PR-AUC, F1 и MCC до и после.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=ru" target="_blank" rel="noopener noreferrer">Google ML Crash Course. ROC и AUC</a><p>ROC и AUC на русском: как выбирать порог и когда нужны кривые точность-полнота.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip">Минимум</span><span>10 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/953158" target="_blank" rel="noopener noreferrer">Habr. Борьба с дисбалансом классов. Стандартные методы</a><p>Метрики при дисбалансе, подбор порога, веса классов в бустинге.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>17 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score" target="_blank" rel="noopener noreferrer">scikit-learn. average_precision_score</a><p>Средняя точность: метрика для редкого положительного класса.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li></ul></div></div>
+  </div>
+</div>
+  </div>
+</section>
+<section class="band" id="r-3" style="padding-block:56px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px">
+      <p class="eyebrow">Роль 3</p>
+      <h2 class="h-lg">Нейросети и представления</h2>
+      <p class="lead">Графовая сеть Chemprop, предобученные модели и итоговый ансамбль.</p>
+      <p class="deliver"><b>На выходе:</b> предсказания Chemprop на val и test в общем формате, при необходимости эмбеддинги молекул.</p>
+    </div>
+    <div class="card" style="margin-bottom:40px"><p class="k">Первые шаги</p><ol class="bullets" style="margin-top:6px"><li>Установить chemprop на машину с GPU или в Colab.</li><li>Обучить базовую модель на <code>clean.csv</code>, сначала со своим scaffold-разбиением.</li><li>Подключить разбиения роли 4 (<code>--splits-column</code>).</li><li>Сохранить предсказания в тот же формат, что у роли 2.</li></ol></div>
+    <div class="sub" id="r-3-1">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 3.1</p><h3 class="h-md">Chemprop (D-MPNN)</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Установить пакет, проверить версию Python.</li><li>Обучить классификацию и регрессию из командной строки.</li><li>Подключить разбиения роли 4 вместо встроенных.</li><li>Сравнить с лучшим бустингом роли 2 на тех же разбиениях.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://www.cambridge.org/engage/coe/article-details/68bb5b5b23be8e43d65c5cc5" target="_blank" rel="noopener noreferrer">Graff et al. Chemprop v2 (Cambridge Open Engage, 2025)</a><p>Chemprop v2: что нового и насколько быстрее.</p></div><div class="meta"><span class="chip soft">EN</span><span>20 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr. Предсказание растворимости графовыми свёрточными сетями</a><p>Как устроены графовые признаки атомов, по-русски.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pypi.org/project/chemprop/" target="_blank" rel="noopener noreferrer">PyPI. chemprop</a><p>Установка Chemprop: версия, Python, лицензия.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>5 мин</span></div></li><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop. Документация</a><p>Руководства по CLI и Python, ноутбуки: multitask, дообучение, неопределённость, интерпретация.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop. CLI: обучение</a><p>Команда chemprop train: типы задач, разбиения, эпохи, ансамбль.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-3-2">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 3.2</p><h3 class="h-md">Multitask и предобучение</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Обучить модель на нескольких таргетах сразу (IC50 и CC50).</li><li>Подмешать дескрипторы RDKit как дополнительные признаки.</li><li>Попробовать дообучение предобученной модели (CheMeleon из документации).</li><li>Эмбеддинги MoLFormer и бустинг на них, если веса доступны.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://www.alphaxiv.org/abs/2106.09553v3" target="_blank" rel="noopener noreferrer">Ross et al. MoLFormer (arXiv 2106.09553)</a><p>MoLFormer: трансформер на SMILES, предобученный на 1,1 млрд молекул.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>Идея раздельных моделей активности и токсичности как альтернатива multitask.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop. Документация</a><p>Ноутбуки: multitask, extra features, transfer learning.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li><li class="res"><div><a class="t" href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a><p>Два ноутбука по Chemprop, в том числе с дескрипторами RDKit.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>1 час</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-3-3">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 3.3</p><h3 class="h-md">Ансамбль и неопределённость</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Ансамбль из нескольких моделей Chemprop.</li><li>Усреднение или стекинг с моделями роли 2.</li><li>Оценить неопределённость и сопоставить её с ошибкой.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12181400" target="_blank" rel="noopener noreferrer">Xu et al. Selective antiviral agents from genomes and ML (Commun. Chem., 2025)</a><p>Консенсус RF и XGB как образец сведения моделей.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>30 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop. CLI: обучение</a><p>Параметры --ensemble-size и --num-replicates.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>20 мин</span></div></li><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/main/" target="_blank" rel="noopener noreferrer">Chemprop. Документация</a><p>Ноутбук про неопределённость.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>30 мин</span></div></li></ul></div></div>
+  </div>
+</div>
+  </div>
+</section>
+<section class="band alt" id="r-4" style="padding-block:56px">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px">
+      <p class="eyebrow">Роль 4</p>
+      <h2 class="h-lg">Валидация, интерпретация и питч</h2>
+      <p class="lead">Честная схема проверки, метрики, объяснения и всё, что увидит жюри.</p>
+      <p class="deliver"><b>На выходе:</b> <code>splits.csv</code> (в первые два часа), таблица метрик, рисунки SHAP, функция <code>predict(smiles)</code>, презентация.</p>
+    </div>
+    <div class="card" style="margin-bottom:40px"><p class="k">Первые шаги</p><ol class="bullets" style="margin-top:6px"><li>Получить <code>clean.csv</code> и сразу построить scaffold-разбиение и разбиение по кластерам.</li><li>Выдать всем <code>splits.csv</code> с колонкой split (train, val, test).</li><li>Написать функцию оценки: один вызов, одна таблица.</li><li>К концу первых суток подготовить скелет презентации.</li></ol></div>
+    <div class="sub" id="r-4-1">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 4.1</p><h3 class="h-md">Схема валидации</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Scaffold-разбиение и разбиение по кластерам Butina; отдельный тест на самых далёких молекулах.</li><li>Зафиксировать seed и выдать команде <code>splits.csv</code>.</li><li>Проверить отсутствие общих молекул между частями (по канонической строке).</li><li>Сравнить оценку на случайном и на scaffold-разбиении для слайда.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://arxiv.org/pdf/2102.09548" target="_blank" rel="noopener noreferrer">Huang et al. Therapeutics Data Commons (arXiv 2102.09548)</a><p>Платформа TDC: наборы данных и типы разбиений.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res"><div><a class="t" href="https://arxiv.org/pdf/2607.10729" target="_blank" rel="noopener noreferrer">Zheng et al. Beyond Scaffold Splits (arXiv 2607.10729)</a><p>Почему scaffold split недостаточен: проверка на редких и далёких молекулах.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res"><div><a class="t" href="https://research.chalmers.se/en/publication/530690" target="_blank" rel="noopener noreferrer">Bender et al. Evaluation guidelines for ML tools in the chemical sciences (2022)</a><p>Perspective в Nature Reviews Chemistry: как честно оценивать модели в химии.</p></div><div class="meta"><span class="chip soft">EN</span><span>40 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://scikit-fingerprints.readthedocs.io/latest/modules/generated/skfp.model_selection.scaffold_train_test_split.html" target="_blank" rel="noopener noreferrer">scikit-fingerprints. scaffold_train_test_split</a><p>Разбиение по scaffold Бемиса и Мерко одной функцией, с примером кода.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li><li class="res"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/split_utils.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Cross-validation and data splitting</a><p>Группы для разбиения: scaffold, кластеры Butina, KMeans, GroupKFold и вложенная кросс-валидация.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/python/data/splitting.html" target="_blank" rel="noopener noreferrer">Chemprop. Разбиение данных (Python)</a><p>Типы разбиений: scaffold_balanced, kmeans, kennard_stone и защита от дубликатов.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-4-2">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 4.2</p><h3 class="h-md">Метрики и калибровка</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>ROC-AUC, PR-AUC, F1, MCC для классификации; RMSE, MAE и R² для регрессии.</li><li>Повторы с разными seed и разброс метрик.</li><li>Подбор порога на val и его перенос на test.</li><li>Единая таблица результатов для всех моделей.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=ru" target="_blank" rel="noopener noreferrer">Google ML Crash Course. ROC и AUC</a><p>ROC и AUC на русском: как выбирать порог и когда нужны кривые точность-полнота.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip">Минимум</span><span>10 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/953158" target="_blank" rel="noopener noreferrer">Habr. Борьба с дисбалансом классов. Стандартные методы</a><p>Метрики при дисбалансе, подбор порога, веса классов в бустинге.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>17 мин</span></div></li><li class="res"><div><a class="t" href="https://research.chalmers.se/en/publication/530690" target="_blank" rel="noopener noreferrer">Bender et al. Evaluation guidelines for ML tools in the chemical sciences (2022)</a><p>Perspective в Nature Reviews Chemistry: как честно оценивать модели в химии.</p></div><div class="meta"><span class="chip soft">EN</span><span>40 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score" target="_blank" rel="noopener noreferrer">scikit-learn. average_precision_score</a><p>Средняя точность: метрика для редкого положительного класса.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>10 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-4-3">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 4.3</p><h3 class="h-md">Интерпретация и область применимости</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>SHAP по лучшей модели на бустинге: какие биты и дескрипторы важны.</li><li>Подсветка подструктур молекул для слайда.</li><li>Расстояние до ближайшей обучающей молекулы против ошибки модели.</li><li>Разбор нескольких крупных ошибок.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://variational.ai/blog/applicability-domains-are-common-in-qsar-but-irrelevant-for-conventional-ml-tasks/" target="_blank" rel="noopener noreferrer">Rolfe. Applicability domains in QSAR (Variational AI, 2024)</a><p>Что такое область применимости и почему её порог условен.</p></div><div class="meta"><span class="chip soft">EN</span><span>10 мин</span></div></li><li class="res"><div><a class="t" href="https://habr.com/ru/post/565650" target="_blank" rel="noopener noreferrer">Habr. Предсказание растворимости графовыми свёрточными сетями</a><p>Пример связи битов отпечатка с подструктурами и химической интуицией.</p></div><div class="meta"><span class="chip soft">RU</span><span class="chip soft">код</span><span>20 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html" target="_blank" rel="noopener noreferrer">SHAP. TreeExplainer</a><p>TreeExplainer: объяснения для XGBoost, LightGBM, CatBoost и деревьев scikit-learn.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li><li class="res"><div><a class="t" href="https://useful-rdkit-utils.readthedocs.io/en/latest/descriptors.html" target="_blank" rel="noopener noreferrer">useful_rdkit_utils. Fingerprints and Descriptors</a><p>compare_datasets для расстояния между train и test.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span>15 мин</span></div></li></ul></div></div>
+  </div>
+</div><div class="sub" id="r-4-4">
+  <div class="sub-head"><p class="k" style="font-size:13px;font-weight:600;color:var(--accent)">Подгруппа 4.4</p><h3 class="h-md">Сборка, predict(SMILES) и питч</h3></div>
+  <div class="split" style="align-items:start">
+    <div class="card"><p class="k">Что сделать</p><ul style="margin:4px 0 0;padding-left:18px;color:var(--fg2);font-size:15px;display:grid;gap:6px"><li>Один скрипт от CSV до файла предсказаний, фиксированные версии пакетов.</li><li>Функция <code>predict(smiles)</code>: оценка активности и токсичности и пометка, если молекула далеко от обучающих.</li><li>Слайды: постановка, схема, метрики, ошибки, ограничения.</li><li>Репетиция демо на двух-трёх молекулах.</li></ul></div>
+    <div><div class="rgroup"><p class="rh">Теория</p><ul class="rlist"><li class="res"><div><a class="t" href="https://dspace.kpfu.ru/xmlui/handle/net/129749" target="_blank" rel="noopener noreferrer">Klimenko et al. DNA intercalating antiviral agents against VACV (2017)</a><p>Контекст для вводной части: почему важны и активность, и безопасность.</p></div><div class="meta"><span class="chip soft">EN</span><span>25 мин</span></div></li><li class="res"><div><a class="t" href="https://static.centraluniversity.ru/documents/legal/education/programm/online-form/ii-v-biotehe/b1-o-dv-04-01-15-01-hemoinformatika-i-mashinnoe-obuchenie-3-sem.pdf" target="_blank" rel="noopener noreferrer">Центральный университет. Программа курса «Хемоинформатика и машинное обучение»</a><p>Какие принципы валидации QSAR называют в курсах (OECD).</p></div><div class="meta"><span class="chip soft">RU</span><span>10 мин</span></div></li></ul></div><div class="rgroup"><p class="rh">Код и библиотеки</p><ul class="rlist"><li class="res"><div><a class="t" href="https://github.com/PatWalters/practical_cheminformatics_tutorials" target="_blank" rel="noopener noreferrer">Pat Walters. practical_cheminformatics_tutorials (GitHub)</a><p>Шаблоны ноутбуков для оформления результатов.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>1 час</span></div></li><li class="res"><div><a class="t" href="https://chemprop.readthedocs.io/en/latest/tutorial/cli/train.html" target="_blank" rel="noopener noreferrer">Chemprop. CLI: обучение</a><p>Команда предсказания и сохранённые модели.</p></div><div class="meta"><span class="chip soft">EN</span><span class="chip soft">код</span><span class="chip">Минимум</span><span>20 мин</span></div></li></ul></div></div>
+  </div>
+</div>
+  </div>
+</section>
+<section class="band alt" style="padding-block:40px 56px"><div class="wrap"><p class="muted" style="font-size:15px">Время на изучение оценено нами. Краткий пересказ каждого материала на вкладке <a href="#digest">«Выжимки»</a>. <a href="#plan">Вернуться к плану</a></p></div></section>
+</div>
+<footer>
+  <div class="wrap">
+    <p>Страницу самого хакатона мы не нашли: план построен по описанию задачи со скриншота. Толкование «без поражения иных объектов» как селективности, порог SI ≥ 10 и распределение по ролям это наше предложение.</p>
+    <p>Фрагмент на Python и команды Chemprop не запускались: в рабочей среде не было доступа к менеджеру пакетов. Флаги Chemprop сверены с документацией версии 2.3.1, имена колонок в коде условные.</p>
+    <p>Выжимки написаны нами по открытым страницам. У Bender et al. и Klimenko et al. мы видели только аннотации, у Elton и Estep только фрагмент, у MoLFormer страницу-обзор. Ролики с видео мы не включали: проверенных материалов с известной длительностью не нашли.</p>
+    <p>Одну найденную страницу открыть не удалось, в список она не вошла. Время на изучение оценено нами.</p>
+  </div>
+</footer>
+<script>
+(function () {
+  var buttons = document.querySelectorAll('.copy');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      if (!el) return;
+      var text = el.textContent;
+      var done = function () {
+        btn.textContent = 'Скопировано';
+        setTimeout(function () { btn.textContent = 'Скопировать'; }, 1600);
+      };
+      var fallback = function () {
+        try {
+          var r = document.createRange();
+          r.selectNodeContents(el);
+          var s = window.getSelection();
+          s.removeAllRanges();
+          s.addRange(r);
+          btn.textContent = 'Выделено';
+          setTimeout(function () { btn.textContent = 'Скопировать'; }, 1600);
+        } catch (e) {}
+      };
+      try {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+
+  // views + filter
+  var root = document.documentElement;
+  var filterState = 'all';
+  function setView(v) {
+    root.setAttribute('data-view', v);
+    var links = document.querySelectorAll('#seg a');
+    links.forEach(function (a) {
+      if (a.getAttribute('data-v') === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+  function route(first) {
+    var h = (location.hash || '').replace(/^#/, '');
+    var v = (h === 'digest' || h.indexOf('dg-') === 0) ? 'digest' : ((h === 'roles' || /^r-\d/.test(h)) ? 'roles' : 'plan');
+    var changed = root.getAttribute('data-view') !== v;
+    setView(v);
+    var target = (h && h !== 'digest' && h !== 'plan') ? document.getElementById(h) : null;
+    if (target) { target.scrollIntoView(); }
+    else if (changed || h === 'digest' || h === 'plan' || h === 'roles') { window.scrollTo(0, 0); }
+  }
+  window.addEventListener('hashchange', function () { route(false); });
+  route(true);
+
+  function applyFilter() {
+    document.querySelectorAll('[data-lang]').forEach(function (el) {
+      var ok = filterState === 'all' ||
+        (filterState === 'code' ? el.getAttribute('data-code') === '1' : el.getAttribute('data-lang') === filterState);
+      if (ok) el.removeAttribute('hidden'); else el.setAttribute('hidden', '');
+    });
+    document.querySelectorAll('.rgroup, .dgroup').forEach(function (g) {
+      var items = g.querySelectorAll('[data-lang]');
+      if (!items.length) return;
+      var any = false;
+      items.forEach(function (i) { if (!i.hasAttribute('hidden')) any = true; });
+      if (any) g.removeAttribute('hidden'); else g.setAttribute('hidden', '');
+      if (g.classList.contains('dgroup')) { var sc = g.closest('section'); if (sc) { if (any) sc.removeAttribute('hidden'); else sc.setAttribute('hidden', ''); } }
+    });
+    document.querySelectorAll('.filter button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-f') === filterState ? 'true' : 'false');
+    });
+  }
+  document.querySelectorAll('.filter button').forEach(function (b) {
+    b.addEventListener('click', function () { filterState = b.getAttribute('data-f'); applyFilter(); });
+  });
+})();
+</script>
+</body></html>
