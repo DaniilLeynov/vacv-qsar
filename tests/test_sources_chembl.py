@@ -81,6 +81,53 @@ def test_load_and_build_dataset(tmp_path):
     assert by_title.loc["M2", "SI VACV"] == pytest.approx(100.0)
 
 
+@pytest.mark.parametrize(
+    ("sql", "reason", "rejected_count"),
+    [
+        ("UPDATE assays SET cell_id=NULL", "unknown cell line", 2),
+        (
+            "UPDATE activities SET doc_id=501 WHERE standard_type='CC50'",
+            "no matching",
+            2,
+        ),
+        (
+            "INSERT INTO activities VALUES (1, 100, 500, 'IC50', 20, 'uM', '=')",
+            "ambiguous IC50/CC50 pairing",
+            3,
+        ),
+    ],
+)
+def test_chembl_drops_unconfirmed_pairs(tmp_path, sql, reason, rejected_count):
+    db = make_db(tmp_path / "chembl.db")
+    with sqlite3.connect(db) as connection:
+        connection.execute(sql)
+
+    measurements = ChemblSource(db).load(tmp_path)
+    dataset, unpaired = build_dataset(measurements[measurements["source_id"] == "M1"])
+
+    assert dataset.empty
+    assert set(unpaired["type"]) == {"ic50", "cc50"}
+    assert len(unpaired) == rejected_count
+    assert all(reason in item for item in unpaired["reason"])
+
+
+def test_chembl_keeps_study_pairs_separate_even_without_doi(tmp_path):
+    db = make_db(tmp_path / "chembl.db")
+    with sqlite3.connect(db) as connection:
+        connection.execute("UPDATE docs SET doi=NULL")
+        connection.execute("INSERT INTO docs VALUES (501, NULL)")
+        connection.executemany(
+            "INSERT INTO activities VALUES (?,?,?,?,?,?,?)",
+            [(1, 100, 501, "IC50", 5, "uM", "="), (2, 100, 501, "CC50", 200, "uM", "=")],
+        )
+
+    measurements = ChemblSource(db).load(tmp_path)
+    dataset, unpaired = build_dataset(measurements[measurements["source_id"] == "M1"])
+
+    assert sorted(dataset["SI VACV"]) == [10.0, 40.0]
+    assert unpaired.empty
+
+
 def test_mass_units_use_molecular_weight(tmp_path, monkeypatch):
     db = make_db(tmp_path / "chembl.db")
     connection = sqlite3.connect(db)

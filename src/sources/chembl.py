@@ -30,6 +30,7 @@ potency AS (
            COALESCE(act.standard_relation, '=') AS relation,
            cd.cell_name AS cell_line,
            v.assay_organism AS organism,
+           act.doc_id AS study_id,
            d.doi AS doi
     FROM activities act
     JOIN vacv_assays v ON v.assay_id = act.assay_id
@@ -46,6 +47,7 @@ cytotox AS (
            COALESCE(act.standard_relation, '=') AS relation,
            cd.cell_name AS cell_line,
            s.assay_organism AS organism,
+           act.doc_id AS study_id,
            d.doi AS doi
     FROM activities act
     LEFT JOIN assays s ON s.assay_id = act.assay_id
@@ -62,6 +64,7 @@ SELECT p.molregno,
        p.relation,
        p.cell_line,
        p.organism,
+       p.study_id,
        p.doi,
        md.molecule_chembl_id,
        cs.canonical_smiles
@@ -124,6 +127,7 @@ class ChemblSource:
             relation,
             cell_line,
             organism,
+            study_id,
             doi,
             source_id,
             smiles,
@@ -149,6 +153,7 @@ class ChemblSource:
                 "relation": "=",
                 "cell_line": cell_line or "",
                 "organism": organism or "",
+                "study_id": str(study_id) if study_id is not None else "",
                 "doi": doi or "",
                 "dropped_reason": "",
             }

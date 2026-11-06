@@ -1,7 +1,5 @@
 from urllib.parse import parse_qs, urlsplit
 
-import pytest
-
 from src.fetch.manifest import Authenticator, Requester
 from src.fetch.requester import build_headers_for, build_url, mask_url
 

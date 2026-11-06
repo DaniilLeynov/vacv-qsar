@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from src.dataset import build
 from src.sources.base import (
     MEASUREMENT_COLUMNS,
     SourceError,
@@ -100,6 +101,30 @@ def test_target_only_source(tmp_path):
     assert by_title.loc["A", "CC50_uM"] == pytest.approx(100.0)
     assert by_title.loc["B", "SI VACV"] == pytest.approx(10000.0)
     assert pd.isna(by_title.loc["B", "IC50_uM_VACV"])
+
+
+@pytest.mark.parametrize("source_id", ["organizers", "lab"])
+def test_organizer_cap_can_differ_from_concentration_ratio(tmp_path, source_id):
+    table = tmp_path / "table.csv"
+    table.write_text(
+        "SMILES,IC50,CC50,SI,Culture\nCCO,0.01,200,10000,Vero\n",
+        encoding="utf-8",
+    )
+    mapping = tmp_path / "source.mapping.yaml"
+    mapping.write_text(
+        f"id: {source_id}\nfile: {table}\nsmiles: SMILES\n"
+        "ic50: IC50\ncc50: CC50\ntarget: SI\ncell_line: Culture\n",
+        encoding="utf-8",
+    )
+    dataset, dropped, problems = build([CsvSource.from_config(mapping)], tmp_path)
+
+    assert dropped.empty
+    if source_id == "organizers":
+        assert dataset["SI VACV"].tolist() == [10000.0]
+        assert problems.empty
+    else:
+        assert dataset.empty
+        assert problems["reason"].tolist() == ["SI does not equal CC50/IC50"]
 
 
 def test_bad_row_does_not_drop_other_rows_with_the_same_title():

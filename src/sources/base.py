@@ -20,6 +20,7 @@ MEASUREMENT_COLUMNS = [
     "relation",
     "cell_line",
     "organism",
+    "study_id",
     "doi",
     "dropped_reason",
 ]
@@ -30,6 +31,7 @@ UNPAIRED_COLUMNS = [
     "source_id",
     "type",
     "cell_line",
+    "study_id",
     "doi",
     "reason",
 ]
@@ -47,6 +49,7 @@ DATASET_COLUMNS = [
 ]
 
 SI_COLUMN = "SI VACV"
+ORGANIZER_SI_CAP = 10000
 
 
 class SourceError(Exception):
@@ -87,6 +90,7 @@ def _aggregate(chunk: pd.DataFrame) -> dict[str, dict]:
         relation = relations[0] if len(set(relations)) == 1 else "~"
         result[str(cell)] = {
             "value_um": float(values.median()),
+            "count": len(values),
             "relation": relation,
             "smiles": _first_nonempty(group["smiles"]),
             "title": _first_nonempty(group["title"]),
@@ -99,6 +103,19 @@ def _aggregate(chunk: pd.DataFrame) -> dict[str, dict]:
 
 def _cell_key(frame: pd.DataFrame) -> pd.Series:
     return frame["cell_line"].fillna("").astype(str).str.strip().str.lower()
+
+
+def _pair_problem(source, study, cell, ic50, cc50) -> str:
+    if ic50 is None or cc50 is None:
+        missing = "IC50" if ic50 is None else "CC50"
+        return f"no matching {missing} on the same cell line"
+    if source != "organizers" and not cell:
+        return "unknown cell line"
+    if source == "chembl" and not study:
+        return "unknown ChEMBL publication"
+    if source != "organizers" and (ic50["count"] != 1 or cc50["count"] != 1):
+        return "ambiguous IC50/CC50 pairing"
+    return ""
 
 
 def build_dataset(
@@ -120,13 +137,18 @@ def build_dataset(
     frame["value_um"] = pd.to_numeric(frame["value_um"], errors="coerce")
     positive = frame["value_um"] > 0
     non_negative_si = (frame["type"] == "si") & (frame["value_um"] >= 0)
-    frame = frame[frame["value_um"].notna() & (positive | non_negative_si)]
+    frame = frame[frame["value_um"].notna() & (positive | non_negative_si)].copy()
     frame["cell_key"] = _cell_key(frame)
+    study_ids = frame["study_id"].fillna("").astype(str).str.strip()
+    dois = frame["doi"].fillna("").astype(str).str.strip().str.lower()
+    frame["study_key"] = ("id:" + study_ids).where(
+        study_ids.ne(""), ("doi:" + dois).where(dois.ne(""), "")
+    )
 
     rows: list[dict] = []
     unpaired: list[dict] = []
-    for (source, source_id), group in frame.groupby(
-        ["source", "source_id"], sort=False
+    for (source, source_id, study), group in frame.groupby(
+        ["source", "source_id", "study_key"], sort=False
     ):
         ic50_map = _aggregate(group[group["type"] == "ic50"])
         cc50_map = _aggregate(group[group["type"] == "cc50"])
@@ -139,22 +161,16 @@ def build_dataset(
 
             if si_record is not None:
                 si_value = si_record["value_um"]
-            elif ic50 is not None and cc50 is not None:
-                si_value = selectivity_index(ic50["value_um"], cc50["value_um"])
             else:
-                present = ic50 or cc50
-                missing = "CC50" if ic50 is not None else "IC50"
-                unpaired.append(
-                    {
-                        "source": source,
-                        "source_id": source_id,
-                        "type": "ic50" if ic50 is not None else "cc50",
-                        "cell_line": present["cell_line"],
-                        "doi": present["doi"],
-                        "reason": f"no matching {missing} on the same cell line",
-                    }
-                )
-                continue
+                reason = _pair_problem(source, study, cell, ic50, cc50)
+                if reason:
+                    unpaired.extend(
+                        group.loc[group["cell_key"] == cell, UNPAIRED_COLUMNS[:-1]]
+                        .assign(reason=reason)
+                        .to_dict("records")
+                    )
+                    continue
+                si_value = selectivity_index(ic50["value_um"], cc50["value_um"])
             if si_value is None:
                 continue
 
@@ -215,7 +231,10 @@ def validate_dataset(dataset: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]
                 continue
             expected = row["CC50_uM"] / row["IC50_uM_VACV"]
             tolerance = max(1e-3, abs(expected) * 1e-3)
-            if abs(expected - row[SI_COLUMN]) > tolerance:
+            is_organizer_cap = (
+                row[SI_COLUMN] == ORGANIZER_SI_CAP and row.get("source") == "organizers"
+            )
+            if not is_organizer_cap and abs(expected - row[SI_COLUMN]) > tolerance:
                 problems.append(
                     {"Title": title, "reason": "SI does not equal CC50/IC50"}
                 )

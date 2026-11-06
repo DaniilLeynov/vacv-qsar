@@ -3,7 +3,7 @@ SOURCES ?= sources
 OUT ?= data/raw
 VENV_FLAGS ?= --system-site-packages
 
-.PHONY: venv chembl data data-organizers data-chembl datasets list fetch test
+.PHONY: venv chembl data data-organizers data-chembl datasets list fetch test lint
 
 venv:
 	python3 -m venv $(VENV_FLAGS) .venv
@@ -30,3 +30,6 @@ fetch:
 
 test:
 	$(PY) -m pytest -q
+
+lint:
+	$(PY) -m ruff check --isolated --select E4,E7,E9,F src tests
