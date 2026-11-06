@@ -1,9 +1,10 @@
 PY ?= .venv/bin/python
 SOURCES ?= sources
 OUT ?= data/raw
+TRAIN_OUT ?= runs/catboost
 VENV_FLAGS ?= --system-site-packages
 
-.PHONY: venv chembl data data-organizers data-chembl datasets list fetch test lint
+.PHONY: venv chembl data data-organizers data-chembl datasets train submit list fetch test lint
 
 venv:
 	python3 -m venv $(VENV_FLAGS) .venv
@@ -27,6 +28,12 @@ list:
 
 fetch:
 	$(PY) -m src.fetch --all --out $(OUT)
+
+train:
+	$(PY) -m src.train --data data/dataset.csv --out $(TRAIN_OUT) --target raw --include-capped
+
+submit: train
+	$(PY) -m src.predict --test data/organizers/test.csv --model $(TRAIN_OUT) --out submissions/submission.csv
 
 test:
 	$(PY) -m pytest -q
