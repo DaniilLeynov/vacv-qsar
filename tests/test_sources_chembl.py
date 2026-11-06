@@ -90,11 +90,6 @@ def test_load_and_build_dataset(tmp_path):
             "no matching",
             2,
         ),
-        (
-            "INSERT INTO activities VALUES (1, 100, 500, 'IC50', 20, 'uM', '=')",
-            "ambiguous IC50/CC50 pairing",
-            3,
-        ),
     ],
 )
 def test_chembl_drops_unconfirmed_pairs(tmp_path, sql, reason, rejected_count):
@@ -109,6 +104,21 @@ def test_chembl_drops_unconfirmed_pairs(tmp_path, sql, reason, rejected_count):
     assert set(unpaired["type"]) == {"ic50", "cc50"}
     assert len(unpaired) == rejected_count
     assert all(reason in item for item in unpaired["reason"])
+
+
+def test_replicates_are_aggregated_by_median(tmp_path):
+    db = make_db(tmp_path / "chembl.db")
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "INSERT INTO activities VALUES (1, 100, 500, 'IC50', 20, 'uM', '=')"
+        )
+
+    measurements = ChemblSource(db).load(tmp_path)
+    dataset, _ = build_dataset(measurements)
+
+    row = dataset.set_index("Title").loc["M1"]
+    assert row["IC50_uM_VACV"] == pytest.approx(15.0)
+    assert row["SI VACV"] == pytest.approx(100.0 / 15.0)
 
 
 def test_chembl_keeps_study_pairs_separate_even_without_doi(tmp_path):

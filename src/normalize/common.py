@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 
+INF = float("inf")
+
 VALID_RELATIONS = {"=", ">", "<", ">=", "<=", "~"}
 CENSORED_RELATIONS = {">", "<", ">=", "<=", "~"}
 EXACT_RELATIONS = {"="}
@@ -72,6 +74,15 @@ def parse_value(text) -> tuple[str, float]:
         raise ValueError(f"cannot parse value {text!r}")
     relation = match.group(1) or "="
     return relation, float(match.group(2))
+
+
+def relation_bounds(relation: str, value: float) -> tuple[float, float]:
+    rel = normalize_relation(relation)
+    if rel in {">", ">="}:
+        return value, INF
+    if rel in {"<", "<="}:
+        return 0.0, value
+    return value, value
 
 
 def normalize_relation(relation: str | None) -> str:

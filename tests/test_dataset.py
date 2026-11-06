@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from src.dataset import build, main
 from src.sources.base import DATASET_COLUMNS
@@ -93,8 +94,6 @@ def test_cli_missing_mapping_reports_error(tmp_path, capsys):
 
 
 def test_cli_chembl_flag_uses_download(monkeypatch, tmp_path):
-    import pandas as pd
-
     from src.sources.base import MEASUREMENT_COLUMNS
 
     class FakeChembl:
@@ -173,14 +172,36 @@ def write_simple_source(tmp_path, rows):
     return CsvSource.from_config(mapping)
 
 
-def test_censored_measurement_is_dropped(tmp_path):
-    source = write_simple_source(
-        tmp_path, "SMILES,IC50_uM,CC50_uM\nCCO,>50,100\n"
+def test_censored_measurement_produces_bounds(tmp_path):
+    (tmp_path / "table.csv").write_text(
+        "SMILES,IC50_uM,CC50_uM,Culture\nCCO,>50,100,CV-1\n",
+        encoding="utf-8",
     )
+    mapping = tmp_path / "lab.mapping.yaml"
+    mapping.write_text(
+        "\n".join(
+            [
+                "id: lab",
+                f"file: {tmp_path / 'table.csv'}",
+                "smiles: SMILES",
+                "ic50: IC50_uM",
+                "cc50: CC50_uM",
+                "units: uM",
+                "cell_line: Culture",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    source = CsvSource.from_config(mapping)
     dataset, dropped, problems = build([source], tmp_path)
 
-    assert dataset.empty
-    assert "censored measurement" in set(dropped["dropped_reason"])
+    assert len(dataset) == 1
+    row = dataset.iloc[0]
+    assert pd.isna(row["SI VACV"])
+    assert row["SI_lower"] == pytest.approx(0.0)
+    assert row["SI_upper"] == pytest.approx(2.0)
+    assert row["IC50_uM_VACV"] == pytest.approx(50.0)
+    assert row["CC50_uM"] == pytest.approx(100.0)
     assert problems.empty
 
 

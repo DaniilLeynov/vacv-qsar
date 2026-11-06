@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pandas as pd
 
-from .normalize.common import CENSORED_RELATIONS
 from .sources.base import (
     SourceAdapter,
     SourceError,
@@ -41,12 +40,6 @@ def build(adapters: list[SourceAdapter], raw_dir: Path) -> tuple[pd.DataFrame, p
 
     parsed = measurements.copy()
     parsed["dropped_reason"] = parsed["dropped_reason"].fillna("").astype(str)
-
-    relations = parsed["relation"].fillna("=").astype(str)
-    censored = relations.isin(CENSORED_RELATIONS)
-    parsed.loc[censored & (parsed["dropped_reason"] == ""), "dropped_reason"] = (
-        "censored measurement"
-    )
 
     numeric = pd.to_numeric(parsed["value_um"], errors="coerce")
     invalid_value = numeric.notna() & (numeric < 0)

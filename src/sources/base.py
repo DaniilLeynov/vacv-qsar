@@ -5,7 +5,7 @@ from typing import Protocol
 
 import pandas as pd
 
-from ..normalize.common import selectivity_index
+from ..normalize.common import INF, relation_bounds
 
 MEASUREMENT_COLUMNS = [
     "source",
@@ -41,6 +41,8 @@ DATASET_COLUMNS = [
     "CC50_uM",
     "IC50_uM_VACV",
     "SI VACV",
+    "SI_lower",
+    "SI_upper",
     "SMILES",
     "strain",
     "Culture",
@@ -113,9 +115,38 @@ def _pair_problem(source, study, cell, ic50, cc50) -> str:
         return "unknown cell line"
     if source == "chembl" and not study:
         return "unknown ChEMBL publication"
-    if source != "organizers" and (ic50["count"] != 1 or cc50["count"] != 1):
-        return "ambiguous IC50/CC50 pairing"
     return ""
+
+
+def _si_from_si_record(source, si_record, ic50) -> tuple[float, float, float]:
+    relation = si_record["relation"]
+    if source == "organizers" and si_record["value_um"] == ORGANIZER_SI_CAP and ic50 is None:
+        relation = ">="
+    lo, hi = relation_bounds(relation, si_record["value_um"])
+    return si_record["value_um"], lo, hi
+
+
+def _si_from_pair(ic50, cc50) -> tuple[float | None, float, float] | None:
+    ic_lo, ic_hi = relation_bounds(ic50["relation"], ic50["value_um"])
+    cc_lo, cc_hi = relation_bounds(cc50["relation"], cc50["value_um"])
+
+    if ic_hi == INF:
+        if cc_lo == INF:
+            return None
+        lo = 0.0
+    else:
+        lo = cc_lo / ic_hi
+
+    if ic_lo == 0.0:
+        hi = INF
+    else:
+        hi = cc_hi / ic_lo
+
+    if lo == 0.0 and hi == INF:
+        return None
+
+    point = lo if lo == hi else None
+    return point, lo, hi
 
 
 def build_dataset(
@@ -160,7 +191,7 @@ def build_dataset(
             si_record = si_map.get(cell)
 
             if si_record is not None:
-                si_value = si_record["value_um"]
+                point, si_lo, si_hi = _si_from_si_record(source, si_record, ic50)
             else:
                 reason = _pair_problem(source, study, cell, ic50, cc50)
                 if reason:
@@ -170,9 +201,15 @@ def build_dataset(
                         .to_dict("records")
                     )
                     continue
-                si_value = selectivity_index(ic50["value_um"], cc50["value_um"])
-            if si_value is None:
-                continue
+                bounds = _si_from_pair(ic50, cc50)
+                if bounds is None:
+                    unpaired.extend(
+                        group.loc[group["cell_key"] == cell, UNPAIRED_COLUMNS[:-1]]
+                        .assign(reason="uninformative SI bounds")
+                        .to_dict("records")
+                    )
+                    continue
+                point, si_lo, si_hi = bounds
 
             records = [item for item in (si_record, ic50, cc50) if item]
             rows.append(
@@ -180,7 +217,9 @@ def build_dataset(
                     "Title": _first_of(records, "title") or source_id,
                     "CC50_uM": cc50["value_um"] if cc50 else None,
                     "IC50_uM_VACV": ic50["value_um"] if ic50 else None,
-                    SI_COLUMN: si_value,
+                    SI_COLUMN: point,
+                    "SI_lower": si_lo,
+                    "SI_upper": si_hi,
                     "SMILES": _first_of(records, "smiles"),
                     "strain": _first_of(records, "organism"),
                     "Culture": _first_of(records, "cell_line"),
@@ -207,7 +246,7 @@ def validate_dataset(dataset: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]
         return dataset, pd.DataFrame(columns=["Title", "reason"])
 
     frame = dataset.copy()
-    for column in ("CC50_uM", "IC50_uM_VACV", SI_COLUMN):
+    for column in ("CC50_uM", "IC50_uM_VACV", SI_COLUMN, "SI_lower", "SI_upper"):
         frame[column] = pd.to_numeric(frame[column], errors="coerce")
 
     bad_rows: set = set()
@@ -218,10 +257,31 @@ def validate_dataset(dataset: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]
             problems.append({"Title": title, "reason": "missing SMILES"})
             bad_rows.add(index)
             continue
-        if pd.isna(row[SI_COLUMN]) or row[SI_COLUMN] < 0:
-            problems.append({"Title": title, "reason": "SI must be non-negative"})
+
+        si = row[SI_COLUMN]
+        lower = row["SI_lower"]
+        upper = row["SI_upper"]
+
+        if pd.notna(si):
+            if si < 0:
+                problems.append({"Title": title, "reason": "SI must be non-negative"})
+                bad_rows.add(index)
+                continue
+        else:
+            if pd.isna(lower) or pd.isna(upper):
+                problems.append({"Title": title, "reason": "missing SI bounds"})
+                bad_rows.add(index)
+                continue
+            if lower < 0 or upper < lower:
+                problems.append({"Title": title, "reason": "invalid SI bounds"})
+                bad_rows.add(index)
+                continue
+
+        if pd.notna(lower) and pd.notna(upper) and lower > upper:
+            problems.append({"Title": title, "reason": "SI lower bound exceeds upper"})
             bad_rows.add(index)
             continue
+
         if pd.notna(row["CC50_uM"]) and pd.notna(row["IC50_uM_VACV"]):
             if row["CC50_uM"] <= 0 or row["IC50_uM_VACV"] <= 0:
                 problems.append(
@@ -232,9 +292,14 @@ def validate_dataset(dataset: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]
             expected = row["CC50_uM"] / row["IC50_uM_VACV"]
             tolerance = max(1e-3, abs(expected) * 1e-3)
             is_organizer_cap = (
-                row[SI_COLUMN] == ORGANIZER_SI_CAP and row.get("source") == "organizers"
+                row[SI_COLUMN] == ORGANIZER_SI_CAP
+                and row.get("source") == "organizers"
             )
-            if not is_organizer_cap and abs(expected - row[SI_COLUMN]) > tolerance:
+            if (
+                pd.notna(si)
+                and not is_organizer_cap
+                and abs(expected - si) > tolerance
+            ):
                 problems.append(
                     {"Title": title, "reason": "SI does not equal CC50/IC50"}
                 )
