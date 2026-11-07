@@ -9,7 +9,7 @@ VENV_FLAGS ?= --system-site-packages
 
 export PYTHONWARNINGS := ignore
 
-.PHONY: benchmark venv chembl data data-selected data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest submit submit-catboost submit-randomforest test lint
+.PHONY: benchmark venv chembl data data-selected data-augmented data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest train-ensemble submit submit-catboost submit-randomforest submit-ensemble test lint
 
 benchmark:
 	@$(PY) -m src.benchmark
@@ -52,6 +52,9 @@ train-catboost:
 train-randomforest:
 	@$(PY) -m src.random_forest train --train data/rf/train.csv --out $(TRAIN_OUT)
 
+train-ensemble:
+	@$(PY) -m src.ensemble train --train data/dataset.csv --organizers data/organizers/train.csv --out $(TRAIN_OUT)
+
 submit: train
 	@$(MAKE) --no-print-directory submit-$(MODEL)
 
@@ -60,6 +63,9 @@ submit-catboost:
 
 submit-randomforest:
 	@$(PY) -m src.random_forest predict --model $(TRAIN_OUT) --test data/rf/test.csv --out submissions/submission.csv
+
+submit-ensemble:
+	@$(PY) -m src.ensemble predict --model $(TRAIN_OUT) --test data/organizers/test.csv --out submissions/submission.csv
 
 test:
 	@$(PY) -m pytest -q

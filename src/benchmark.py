@@ -11,6 +11,7 @@ from typing import Callable
 
 warnings.filterwarnings("ignore")
 
+from . import ensemble
 from . import predict as catboost_predict
 from . import random_forest
 from . import train as catboost_train
@@ -35,6 +36,13 @@ def _catboost_metrics() -> dict:
 def _random_forest_metrics() -> dict:
     payload = json.loads(
         (RUNS / "randomforest" / "metrics.json").read_text(encoding="utf-8")
+    )
+    return payload["metrics"]
+
+
+def _ensemble_metrics() -> dict:
+    payload = json.loads(
+        (RUNS / "ensemble" / "metrics.json").read_text(encoding="utf-8")
     )
     return payload["metrics"]
 
@@ -91,6 +99,32 @@ def build_models() -> list[ModelSpec]:
                 ]
             ),
             metrics=_random_forest_metrics,
+        ),
+        ModelSpec(
+            name="ensemble",
+            train=lambda: ensemble.main(
+                [
+                    "train",
+                    "--train",
+                    "data/dataset.csv",
+                    "--organizers",
+                    "data/organizers/train.csv",
+                    "--out",
+                    str(RUNS / "ensemble"),
+                ]
+            ),
+            predict=lambda out: ensemble.main(
+                [
+                    "predict",
+                    "--model",
+                    str(RUNS / "ensemble"),
+                    "--test",
+                    "data/organizers/test.csv",
+                    "--out",
+                    str(out),
+                ]
+            ),
+            metrics=_ensemble_metrics,
         ),
     ]
 

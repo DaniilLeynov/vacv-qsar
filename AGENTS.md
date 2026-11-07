@@ -63,6 +63,7 @@ src/
   train.py              # CatBoost (--model catboost)
   predict.py            # инференс CatBoost
   random_forest.py      # RandomForest (data/rf, признаки уже готовы)
+  ensemble.py           # бленд RandomForest (raw) + HistGB (log1p) + Culture
   pipeline.py           # сквозной запуск
 scripts/                # вспомогательные скрипты
 notebooks/              # эксперименты, не источник истины
@@ -84,8 +85,9 @@ submissions/            # submission.csv и версии
 целевая колонка `SI VACV`). `data/dataset.csv` собирается из неё через
 `sources/selected.mapping.yaml`; данные организаторов
 (`data/organizers/train.csv`) оставлены только для справки. Модель
-выбирается через `MODEL`: `make train MODEL=catboost` (по умолчанию) или
-`make train MODEL=randomforest`; так же для `make submit`.
+выбирается через `MODEL`: `make train MODEL=catboost` (по умолчанию),
+`make train MODEL=randomforest` или `make train MODEL=ensemble`; так же для
+`make submit`.
 
 Единицы: концентрации в **мкМ** (µM). Если источник даёт нМ или мг/л —
 переводи в мкМ на этапе сборки базы, а не в модели.
