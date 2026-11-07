@@ -9,12 +9,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
-warnings.filterwarnings("ignore")
-
 from . import ensemble
 from . import predict as catboost_predict
 from . import random_forest
+from . import rf_robust
 from . import train as catboost_train
+
+warnings.filterwarnings("ignore")
 
 RUNS = Path("runs")
 DEFAULT_SUBMISSION = Path("submissions/submission.csv")
@@ -45,6 +46,12 @@ def _ensemble_metrics() -> dict:
         (RUNS / "ensemble" / "metrics.json").read_text(encoding="utf-8")
     )
     return payload["metrics"]
+
+
+def _rfrobust_metrics() -> dict:
+    return json.loads(
+        (RUNS / "rfrobust" / "metrics.json").read_text(encoding="utf-8")
+    )
 
 
 def build_models() -> list[ModelSpec]:
@@ -125,6 +132,30 @@ def build_models() -> list[ModelSpec]:
                 ]
             ),
             metrics=_ensemble_metrics,
+        ),
+        ModelSpec(
+            name="rfrobust",
+            train=lambda: rf_robust.main(
+                [
+                    "train",
+                    "--train",
+                    "data/rf_robust/train_407.csv",
+                    "--out",
+                    str(RUNS / "rfrobust"),
+                ]
+            ),
+            predict=lambda out: rf_robust.main(
+                [
+                    "predict",
+                    "--model",
+                    str(RUNS / "rfrobust"),
+                    "--test",
+                    "data/organizers/test.csv",
+                    "--out",
+                    str(out),
+                ]
+            ),
+            metrics=_rfrobust_metrics,
         ),
     ]
 

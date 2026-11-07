@@ -5,11 +5,12 @@ SOURCES ?= sources
 OUT ?= data/raw
 MODEL ?= catboost
 TRAIN_OUT ?= runs/$(MODEL)
+JOBS ?= 0
 VENV_FLAGS ?= --system-site-packages
 
 export PYTHONWARNINGS := ignore
 
-.PHONY: benchmark venv chembl data data-selected data-augmented data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest train-ensemble submit submit-catboost submit-randomforest submit-ensemble test lint
+.PHONY: benchmark venv chembl data data-selected data-augmented data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest train-ensemble train-rfrobust submit submit-catboost submit-randomforest submit-ensemble submit-rfrobust test lint
 
 benchmark:
 	@$(PY) -m src.benchmark
@@ -65,6 +66,11 @@ train-randomforest:
 train-ensemble:
 	@$(PY) -m src.ensemble train --train data/dataset.csv --organizers data/organizers/train.csv --out $(TRAIN_OUT)
 
+train-rfrobust:
+	@$(PY) -m src.rf_robust train \
+		--train data/rf_robust/train_407.csv \
+		--out runs/rfrobust --jobs $(JOBS)
+
 submit: train
 	@$(MAKE) --no-print-directory submit-$(MODEL)
 
@@ -76,6 +82,13 @@ submit-randomforest:
 
 submit-ensemble:
 	@$(PY) -m src.ensemble predict --model $(TRAIN_OUT) --test data/organizers/test.csv --out submissions/submission.csv
+
+submit-rfrobust:
+	@$(PY) -m src.rf_robust predict \
+		--model runs/rfrobust \
+		--test data/organizers/test.csv \
+		--out submissions/submission.csv \
+		--jobs $(JOBS)
 
 test:
 	@$(PY) -m pytest -q

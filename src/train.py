@@ -161,8 +161,10 @@ def _train_reg_fold(payload: tuple) -> np.ndarray:
         use_scaffold,
     ) = payload
     if use_scaffold:
-        x_train = pd.DataFrame(x_num[tr]); x_train["sc"] = sc[tr]
-        x_valid = pd.DataFrame(x_num[va]); x_valid["sc"] = sc[va]
+        x_train = pd.DataFrame(x_num[tr])
+        x_train["sc"] = sc[tr]
+        x_valid = pd.DataFrame(x_num[va])
+        x_valid["sc"] = sc[va]
         cat = ["sc"]
     else:
         x_train, x_valid, cat = x_num[tr], x_num[va], []

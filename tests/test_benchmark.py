@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from src.benchmark import run
 
 

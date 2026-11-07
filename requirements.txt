@@ -4,3 +4,6 @@ numpy>=1.21
 rdkit>=2022.9
 chembl-downloader>=0.5
 catboost>=1.2
+scikit-learn>=1.2
+joblib>=1.0
+threadpoolctl>=3.0

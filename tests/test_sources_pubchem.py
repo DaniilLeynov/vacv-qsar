@@ -1,6 +1,5 @@
 import json
 
-import pandas as pd
 import pytest
 
 from src.sources.base import SourceError, build_dataset
@@ -44,7 +43,7 @@ def write_fixture(tmp_path):
 
 
 def test_pubchem_load_and_pair(tmp_path):
-    out = write_fixture(tmp_path)
+    write_fixture(tmp_path)
     source = PubchemSource()
     measurements = source.load(tmp_path)
 
