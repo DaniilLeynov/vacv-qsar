@@ -1,7 +1,8 @@
 PY ?= .venv/bin/python
 SOURCES ?= sources
 OUT ?= data/raw
-TRAIN_OUT ?= runs/catboost
+MODEL ?= catboost
+TRAIN_OUT ?= runs/$(MODEL)
 VENV_FLAGS ?= --system-site-packages
 
 .PHONY: venv chembl data data-organizers data-chembl datasets registry list fetch train submit test lint
@@ -33,7 +34,7 @@ fetch:
 	$(PY) -m src.fetch --all --out $(OUT)
 
 train:
-	$(PY) -m src.train --data data/dataset.csv --out $(TRAIN_OUT) --mode exact --use-scaffold
+	$(PY) -m src.train --data data/dataset.csv --out $(TRAIN_OUT) --model $(MODEL) --mode exact --use-scaffold
 
 submit: train
 	$(PY) -m src.predict --test data/organizers/test.csv --model $(TRAIN_OUT) --out submissions/submission.csv

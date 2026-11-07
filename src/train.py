@@ -185,6 +185,10 @@ def build_parser() -> argparse.ArgumentParser:
         description="Train CatBoost to predict SI VACV from SMILES.",
     )
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
+    parser.add_argument(
+        "--model", choices=["catboost"], default="catboost",
+        help="model family to train (more families can be registered here)",
+    )
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
@@ -336,6 +340,7 @@ def main(argv: list[str] | None = None) -> int:
 
     report = {
         "data": str(args.data),
+        "model": args.model,
         "rows": int(len(frame)),
         "folds": args.folds,
         "seed": args.seed,
@@ -366,7 +371,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"rows={len(frame)} folds={args.folds} jobs={jobs} "
-        f"threads/fold={thread_count} mode={args.mode}"
+        f"threads/fold={thread_count} model={args.model} mode={args.mode}"
     )
     print(
         "CatBoost OOF  "
