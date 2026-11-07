@@ -166,6 +166,10 @@ submissions/            # submission.csv и версии
 ## 6. Воспроизводимость
 
 - Python 3.11+. Зависимости — в `requirements.txt` с закреплёнными версиями.
+- `make` без аргументов — бенчмарк всех моделей (`make train MODEL=...`
+  и `make submit MODEL=...` — конкретная модель). Альтернативно те же цели
+  есть в `CMakeLists.txt`: `cmake -S . -B build`, затем
+  `cmake --build build --target benchmark|train|submit|test|data`.
 - Из чистого клона должны работать:
   - `make data` — собрать базу (или проверить, что она уже в репозитории);
   - `make train` — обучить модель;

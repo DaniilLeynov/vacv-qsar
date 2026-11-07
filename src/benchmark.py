@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import shutil
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
+
+warnings.filterwarnings("ignore")
 
 from . import predict as catboost_predict
 from . import random_forest
@@ -90,9 +95,18 @@ def build_models() -> list[ModelSpec]:
     ]
 
 
-def _check(result) -> None:
+def _quiet(call) -> tuple[int, str]:
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        code = call()
+    return code, buffer.getvalue()
+
+
+def _check(result, log: str, name: str) -> None:
     if result not in (None, 0):
-        raise RuntimeError(f"step failed with exit code {result}")
+        if log.strip():
+            print(log)
+        raise RuntimeError(f"{name} failed with exit code {result}")
 
 
 def run(
@@ -105,13 +119,15 @@ def run(
 
     results: list[tuple[ModelSpec, dict]] = []
     for spec in models:
-        print(f"=== training {spec.name}")
-        _check(spec.train())
+        print(f"training {spec.name} ...")
+        code, log = _quiet(spec.train)
+        _check(code, log, spec.name)
         results.append((spec, spec.metrics()))
 
     best_spec, best_metrics = min(results, key=lambda item: item[1]["mse_si"])
     per_model = submissions_dir / f"submission_{best_spec.name}.csv"
-    _check(best_spec.predict(per_model))
+    code, log = _quiet(lambda: best_spec.predict(per_model))
+    _check(code, log, best_spec.name)
     shutil.copyfile(per_model, submission)
 
     print("\nmodel         OOF MSE(SI)      RMSE      MAE")
