@@ -8,3 +8,4 @@ data/processed/
 data/dataset_*.csv
 runs/
 submissions/
+build/
