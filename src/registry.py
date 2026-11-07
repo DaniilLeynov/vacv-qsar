@@ -38,7 +38,7 @@ def _read(path: Path) -> pd.DataFrame:
 def build_registry(
     organizers: Path,
     chembl: Path | None,
-    paper: Path | None,
+    papers: list[Path],
     out: Path,
 ) -> pd.DataFrame:
     parts = []
@@ -46,8 +46,9 @@ def build_registry(
         parts.append(_read(organizers))
     if chembl is not None and chembl.exists():
         parts.append(_read(chembl))
-    if paper is not None and paper.exists():
-        parts.append(_read(paper))
+    for paper in papers:
+        if paper is not None and Path(paper).exists():
+            parts.append(_read(paper))
     if not parts:
         raise FileNotFoundError("no input tables found")
 
@@ -64,14 +65,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--organizers", type=Path, default=Path("data/dataset.csv"))
     parser.add_argument("--chembl", type=Path, default=Path("data/dataset_chembl.csv"))
-    parser.add_argument("--paper", type=Path, default=Path("data/paper_cidofovir.csv"))
+    parser.add_argument(
+        "--paper",
+        type=Path,
+        action="append",
+        default=None,
+        help="extra paper table; repeatable",
+    )
     parser.add_argument("--out", type=Path, default=Path("data/found.csv"))
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    frame = build_registry(args.organizers, args.chembl, args.paper, args.out)
+    papers = args.paper or [
+        Path("data/paper_cidofovir.csv"),
+        Path("data/paper_bmcl2022.csv"),
+    ]
+    frame = build_registry(args.organizers, args.chembl, papers, args.out)
 
     print(f"{args.out}: {len(frame)} rows")
     print(frame.groupby(["source", "status"]).size().to_string())

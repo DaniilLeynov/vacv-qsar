@@ -383,3 +383,13 @@ BCV,20.07,0.2996,66.99,66.99,66.99,,Vaccinia virus Tiantan (TT),A549,10.1016/j.e
 1q,134.3,0.8375,160.4,160.4,160.4,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
 1r,8.561,0.5492,15.59,15.59,15.59,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
 1r,80.8,0.5927,136.3,136.3,136.3,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
+1a,1825.57,15.53,117.0,117.0,117.0,CCOC(=O)c1c(C)nc(-c2ccccc2O)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+1e,45.7,0.45,102.0,102.0,102.0,CCOC(=O)c1c(C)nc(-c2ccc([N+](=O)[O-])cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+1f,321.97,0.35,919.0,919.0,919.0,CCOC(=O)c1c(C)nc(-c2ccc(C(F)(F)F)cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2a,196.89,15.02,13.0,13.0,13.0,CCCCNC(=O)c1c(C)nc(-c2ccccc2O)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2c,436.26,73.37,6.0,6.0,6.0,CCCCNC(=O)c1c(C)nc(-c2ccccc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2g,164.47,17.64,9.0,9.0,9.0,CCCCNC(=O)c1c(C)nc(-c2cccc([N+](=O)[O-])c2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2i,200.63,3.02,66.0,66.0,66.0,CCCCNC(=O)c1c(C)nc(-c2ccc([N+](=O)[O-])cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2j,356.95,10.73,33.0,33.0,33.0,Cc1nc(-c2ccc([N+](=O)[O-])cc2)n(O)c1C(=O)NC1CC1,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2k,26.1,3.4,8.0,8.0,8.0,CCCCNC(=O)c1c(C)nc(-c2ccc(C(F)(F)F)cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
+2l,201.85,20.58,10.0,10.0,10.0,Cc1nc(-c2ccc(C(F)(F)F)cc2)n(O)c1C(=O)NC1CC1,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel

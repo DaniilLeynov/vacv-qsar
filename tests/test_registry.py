@@ -25,7 +25,7 @@ def test_registry_merges_and_marks_status(tmp_path):
         }
     ).to_csv(paper, index=False)
 
-    frame = build_registry(organizers, None, paper, tmp_path / "found.csv")
+    frame = build_registry(organizers, None, [paper], tmp_path / "found.csv")
 
     assert len(frame) == 2
     status = dict(zip(frame["Title"], frame["status"]))
