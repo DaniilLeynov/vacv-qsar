@@ -51,7 +51,8 @@ doc/
 data/
   raw/                  # исходные выгрузки (см. раздел 7)
   processed/            # clean.csv, splits.csv — генерируются
-  dataset.csv           # итоговая база, коммитится
+  rf/                   # отобранная таблица 408 строк: основная для обучения
+  dataset.csv           # итоговая база, собирается из data/rf/train.csv
 src/
   fetch/                # транспорт: манифесты, пагинация, кеш, провенанс
   sources/              # адаптеры источников (base.py, chembl.py, generic_csv.py)
@@ -59,8 +60,9 @@ src/
   dataset.py            # сборка и валидация data/dataset.csv
   features.py           # отпечатки и дескрипторы
   split.py              # разбиения train/val/test
-  train.py              # обучение
-  predict.py            # инференс, predict(smiles)
+  train.py              # CatBoost (--model catboost)
+  predict.py            # инференс CatBoost
+  random_forest.py      # RandomForest (data/rf, признаки уже готовы)
   pipeline.py           # сквозной запуск
 scripts/                # вспомогательные скрипты
 notebooks/              # эксперименты, не источник истины
@@ -77,6 +79,13 @@ submissions/            # submission.csv и версии
 - Пути и параметры — через конфиг/CLI-аргументы, не хардкодом.
 
 ## 4. Контракт данных
+
+Основная обучающая таблица — `data/rf/train.csv` (408 отобранных строк,
+целевая колонка `SI VACV`). `data/dataset.csv` собирается из неё через
+`sources/selected.mapping.yaml`; данные организаторов
+(`data/organizers/train.csv`) оставлены только для справки. Модель
+выбирается через `MODEL`: `make train MODEL=catboost` (по умолчанию) или
+`make train MODEL=randomforest`; так же для `make submit`.
 
 Единицы: концентрации в **мкМ** (µM). Если источник даёт нМ или мг/л —
 переводи в мкМ на этапе сборки базы, а не в модели.

@@ -5,7 +5,7 @@ MODEL ?= catboost
 TRAIN_OUT ?= runs/$(MODEL)
 VENV_FLAGS ?= --system-site-packages
 
-.PHONY: venv chembl data data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest submit submit-catboost submit-randomforest test lint
+.PHONY: venv chembl data data-selected data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest submit submit-catboost submit-randomforest test lint
 
 venv:
 	python3 -m venv $(VENV_FLAGS) .venv
@@ -14,15 +14,18 @@ venv:
 chembl:
 	$(PY) -m chembl_downloader download -v
 
-data: data-organizers
+data: data-selected
+
+data-selected:
+	$(PY) -m src.dataset --csv sources/selected.mapping.yaml --out data/dataset.csv --dropped data/processed/dropped.csv
 
 data-organizers:
-	$(PY) -m src.dataset --csv sources/organizers.mapping.yaml --out data/dataset.csv --dropped data/processed/dropped.csv
+	$(PY) -m src.dataset --csv sources/organizers.mapping.yaml --out data/dataset_organizers.csv --dropped data/processed/dropped_organizers.csv
 
 data-chembl:
 	$(PY) -m src.dataset --chembl --out data/dataset_chembl.csv --dropped data/processed/dropped_chembl.csv
 
-datasets: data-organizers data-chembl
+datasets: data-selected data-chembl
 
 registry:
 	$(PY) -m src.registry --out data/found.csv

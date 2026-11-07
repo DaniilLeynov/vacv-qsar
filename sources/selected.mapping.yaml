@@ -1,0 +1,6 @@
+# Primary training table: the colleague's selected 408-row dataset.
+id: selected
+file: data/rf/train.csv
+smiles: SMILES
+title: Title
+target: SI VACV
