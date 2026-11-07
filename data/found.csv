@@ -433,44 +433,44 @@ CHEMBL4513542,287.8,11.1,25.92792792792793,25.92792792792793,25.92792792792793,C
 CHEMBL4559597,285.0,38.7,7.364341085271318,7.364341085271318,7.364341085271318,CC1(C)[C@@H]2CC[C@@]1(C)/C(=N/NC(=O)c1ccco1)C2,Orthopoxvirus vaccinia,Vero,10.1039/C8MD00442K,chembl,ready,
 CHEMBL4591029,600.2,6.2,96.80645161290325,96.80645161290325,96.80645161290325,CC12C=CC3(CN(c4ccccc4)C(=O)C3C1C(=O)N/N=C1\C[C@H]3CC[C@]1(C)C3(C)C)O2,Orthopoxvirus vaccinia,Vero,10.1039/C8MD00442K,chembl,ready,
 CHEMBL5314375,475.3,40.0,11.8825,11.8825,11.8825,Nc1ccn(C[C@@H](CO)OCP(=O)(O)O)c(=O)n1.O.O,Orthopoxvirus vaccinia,Vero,10.1039/C8MD00442K,chembl,ready,
-BCV,13.87,0.1963,70.66,70.66,70.66,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-BCV,20.07,0.2996,66.99,66.99,66.99,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1a,81.33,2.49,32.66,32.66,32.66,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1a,65.16,6.272,10.39,10.39,10.39,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1b,14.31,0.3654,39.16,39.16,39.16,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1b,46.98,0.2174,216.1,216.1,216.1,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1c,6.53,0.096,68.02,68.02,68.02,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1c,14.73,0.079,186.5,186.5,186.5,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1d,2.578,0.0684,37.69,37.69,37.69,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1d,8.689,0.0904,96.12,96.12,96.12,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1e,4.903,0.141,34.77,34.77,34.77,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1e,14.11,0.1035,136.3,136.3,136.3,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1f,181.7,31.49,5.77,5.77,5.77,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1f,129.8,21.96,5.91,5.91,5.91,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1g,33.29,6.535,5.09,5.09,5.09,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1g,47.55,2.02,23.54,23.54,23.54,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1h,13.94,0.2826,49.33,49.33,49.33,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1h,50.74,0.2233,227.2,227.2,227.2,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1i,12.67,0.2737,46.29,46.29,46.29,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1i,46.69,0.4007,116.5,116.5,116.5,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1j,9.87,0.4356,22.66,22.66,22.66,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1j,32.31,0.7243,44.61,44.61,44.61,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1k,95.83,40.64,2.36,2.36,2.36,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1k,161.9,45.66,3.546,3.546,3.546,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1l,34.96,0.8611,40.6,40.6,40.6,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1l,80.62,1.05,76.78,76.78,76.78,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1m,18.1,0.5165,35.04,35.04,35.04,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1m,44.34,0.5991,74.01,74.01,74.01,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1n,12.48,0.3042,41.03,41.03,41.03,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1n,31.04,1.648,18.83,18.83,18.83,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1o,200.0,49.34,4.054,4.054,4.054,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,CC50>200
-1o,200.0,50.0,4.0,4.0,inf,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,IC50>50;CC50>200;SI>4
-1p,115.4,6.274,18.39,18.39,18.39,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1p,193.8,4.286,45.22,45.22,45.22,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1q,15.21,0.8539,17.81,17.81,17.81,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1q,134.3,0.8375,160.4,160.4,160.4,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1r,8.561,0.5492,15.59,15.59,15.59,,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
-1r,80.8,0.5927,136.3,136.3,136.3,,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,needs_smiles,
+BCV,13.87,0.1963,70.66,70.66,70.66,CCCCCCCCCCCCCCCCOCCCOP(=O)(O)COC(CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+BCV,20.07,0.2996,66.99,66.99,66.99,CCCCCCCCCCCCCCCCOCCCOP(=O)(O)COC(CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1a,81.33,2.49,32.66,32.66,32.66,CCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1a,65.16,6.272,10.39,10.39,10.39,CCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1b,14.31,0.3654,39.16,39.16,39.16,CCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1b,46.98,0.2174,216.1,216.1,216.1,CCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1c,6.53,0.096,68.02,68.02,68.02,CCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1c,14.73,0.079,186.5,186.5,186.5,CCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1d,2.578,0.0684,37.69,37.69,37.69,CCCCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1d,8.689,0.0904,96.12,96.12,96.12,CCCCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1e,4.903,0.141,34.77,34.77,34.77,CCCCCCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1e,14.11,0.1035,136.3,136.3,136.3,CCCCCCCCCCCCCCCCCCSSCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1f,181.7,31.49,5.77,5.77,5.77,CCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1f,129.8,21.96,5.91,5.91,5.91,CCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1g,33.29,6.535,5.09,5.09,5.09,CCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1g,47.55,2.02,23.54,23.54,23.54,CCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1h,13.94,0.2826,49.33,49.33,49.33,CCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1h,50.74,0.2233,227.2,227.2,227.2,CCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1i,12.67,0.2737,46.29,46.29,46.29,CCCCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1i,46.69,0.4007,116.5,116.5,116.5,CCCCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1j,9.87,0.4356,22.66,22.66,22.66,CCCCCCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1j,32.31,0.7243,44.61,44.61,44.61,CCCCCCCCCCCCCCCCCCSSCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1k,95.83,40.64,2.36,2.36,2.36,CCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1k,161.9,45.66,3.546,3.546,3.546,CCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1l,34.96,0.8611,40.6,40.6,40.6,CCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1l,80.62,1.05,76.78,76.78,76.78,CCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1m,18.1,0.5165,35.04,35.04,35.04,CCCCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1m,44.34,0.5991,74.01,74.01,74.01,CCCCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1n,12.48,0.3042,41.03,41.03,41.03,CCCCCCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1n,31.04,1.648,18.83,18.83,18.83,CCCCCCCCCCCCCCCCSSCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1o,200.0,49.34,4.054,4.054,4.054,CCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,CC50>200
+1o,200.0,50.0,4.0,4.0,inf,CCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,IC50>50;CC50>200;SI>4
+1p,115.4,6.274,18.39,18.39,18.39,CCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1p,193.8,4.286,45.22,45.22,45.22,CCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1q,15.21,0.8539,17.81,17.81,17.81,CCCCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1q,134.3,0.8375,160.4,160.4,160.4,CCCCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
+1r,8.561,0.5492,15.59,15.59,15.59,CCCCCCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),Vero,10.1016/j.ejmech.2023.115601,paper,ready,
+1r,80.8,0.5927,136.3,136.3,136.3,CCCCCCCCCCCCCCSSCCCCCCOP(=O)(O)CO[C@H](CO)Cn1ccc(N)nc1=O,Vaccinia virus Tiantan (TT),A549,10.1016/j.ejmech.2023.115601,paper,ready,
 1a,1825.57,15.53,117.0,117.0,117.0,CCOC(=O)c1c(C)nc(-c2ccccc2O)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
 1e,45.7,0.45,102.0,102.0,102.0,CCOC(=O)c1c(C)nc(-c2ccc([N+](=O)[O-])cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
 1f,321.97,0.35,919.0,919.0,919.0,CCOC(=O)c1c(C)nc(-c2ccc(C(F)(F)F)cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
@@ -481,21 +481,21 @@ BCV,20.07,0.2996,66.99,66.99,66.99,,Vaccinia virus Tiantan (TT),A549,10.1016/j.e
 2j,356.95,10.73,33.0,33.0,33.0,Cc1nc(-c2ccc([N+](=O)[O-])cc2)n(O)c1C(=O)NC1CC1,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
 2k,26.1,3.4,8.0,8.0,8.0,CCCCNC(=O)c1c(C)nc(-c2ccc(C(F)(F)F)cc2)n1O,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
 2l,201.85,20.58,10.0,10.0,10.0,Cc1nc(-c2ccc(C(F)(F)F)cc2)n(O)c1C(=O)NC1CC1,Vaccinia virus Copenhagen,Vero,10.1016/j.bmcl.2022.129080,paper,ready,CC50 rel ; IC50 rel
-adm5,309.3,0.133,2325.0,2325.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm6,280.0,4.1,68.0,68.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm7,296.4,4.85,61.0,61.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm8,296.4,0.27,1098.0,1098.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm9,238.0,8.3,28.0,28.0,28.0,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
-adm11,299.2,3.06,98.0,98.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm12,309.0,0.216,1428.0,1428.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm16,273.0,1.07,255.0,255.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm17,253.7,30.9,8.2,8.2,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm18,47.0,12.53,3.75,3.75,3.75,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
-adm20,94.3,36.26,2.6,2.6,2.6,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
+adm5,309.3,0.133,2325.0,2325.0,inf,O=C(NC12CC3CC(CC(C3)C1)C2)c1ccc(C(F)(F)F)cc1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm6,280.0,4.1,68.0,68.0,inf,CCC12CC3CC(C1)CC(NC(=O)c1ccc(C(F)(F)F)cc1)(C3)C2,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm7,296.4,4.85,61.0,61.0,inf,CN(C(=O)c1ccc(C(F)(F)F)cc1)C12CC3CC(CC(C3)C1)C2,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm8,296.4,0.27,1098.0,1098.0,inf,O=C(NCC12CC3CC(CC(C3)C1)C2)c1ccc(C(F)(F)F)cc1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm9,238.0,8.3,28.0,28.0,28.0,O=C(NCC12CC3CC(CC(C3)C1)C2)c1ccc(Br)cc1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
+adm11,299.2,3.06,98.0,98.0,inf,O=C(NC1C2CC3CC(C2)CC1C3)c1ccc(Br)cc1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm12,309.0,0.216,1428.0,1428.0,inf,O=C(NC1C2CC3CC(C2)CC1C3)c1ccc(C(F)(F)F)cc1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm16,273.0,1.07,255.0,255.0,inf,NN(C(=O)c1ccc(C(F)(F)F)cc1)C(=O)C12CC3CC(CC(C3)C1)C2,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm17,253.7,30.9,8.2,8.2,inf,CC1(C)C2CC3CC(C2)CC1(C(=O)N(N)C(=O)c1ccc(C(F)(F)F)cc1)C3,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm18,47.0,12.53,3.75,3.75,3.75,CCC1C2CC3CC(C2)CC1(C(=O)N(N)C(=O)c1ccc(C(F)(F)F)cc1)C3,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
+adm20,94.3,36.26,2.6,2.6,2.6,NC(=O)N(NC(=O)c1ccc(C(F)(F)F)cc1)C12CC3CC(CC(C3)C1)C2,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
 adm25,297.0,198.0,1.5,1.5,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm27,296.0,2.8,103.0,103.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm28,214.6,3.52,61.0,61.0,61.0,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
+adm27,296.0,2.8,103.0,103.0,inf,NNC(=O)C1(C2C3CC4CC(C3)CC2C4)C=CC(C(F)(F)F)=CC1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel gt; SI rel gt
+adm28,214.6,3.52,61.0,61.0,61.0,NNC(=O)C1(C2C3CC4CC2CC(Cl)(C4)C3)C=CC(C(F)(F)F)=CC1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
 adm31,274.4,10.55,26.0,26.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
-adm32,14.0,0.515,27.0,27.0,27.0,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
-adm36,2.5,1.66,1.5,1.5,1.5,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel exact; SI rel exact
+adm32,14.0,0.515,27.0,27.0,27.0,CC(C12CC3CC(CC(C3)C1)C2)C1(C(=O)NN)C=CC(C(F)(F)F)=CC1,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
+adm36,2.5,1.66,1.5,1.5,1.5,CCC12CC3CC(C1)CC(C1(C(=O)NN)C=CC(C(F)(F)F)=CC1)(C3)C2,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,ready,CC50 rel exact; SI rel exact
 adm37,296.4,8.98,33.0,33.0,inf,,Vaccinia virus,Vero,10.1016/j.ejmech.2021.113485,paper,needs_smiles,CC50 rel gt; SI rel gt
