@@ -81,6 +81,7 @@ def main(argv: list[str] | None = None) -> int:
     papers = args.paper or [
         Path("data/paper_cidofovir.csv"),
         Path("data/paper_bmcl2022.csv"),
+        Path("data/paper_adamantane2021.csv"),
     ]
     frame = build_registry(args.organizers, args.chembl, papers, args.out)
 
