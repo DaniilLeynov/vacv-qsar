@@ -34,6 +34,8 @@ def load_models(model_dir: Path) -> dict:
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
 
     mode = metrics.get("mode", "twostage")
+    if mode == "exact":
+        mode = "reg"
     use_scaffold = metrics.get("use_scaffold", False)
     blend_c = float(metrics.get("blend_c", 10000.0))
     target = metrics.get("target", "raw")

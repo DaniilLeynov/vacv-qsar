@@ -193,7 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--target", choices=["log1p", "raw"], default="raw")
     parser.add_argument(
-        "--mode", choices=["twostage", "reg"], default="twostage"
+        "--mode", choices=["twostage", "reg", "exact"], default="twostage"
     )
     parser.add_argument("--blend-c", type=float, default=SI_CAP)
     parser.add_argument("--use-scaffold", action="store_true")
@@ -280,27 +280,34 @@ def main(argv: list[str] | None = None) -> int:
         reg_params = _regressor_params(
             args.seed, args.iterations, args.depth, args.learning_rate, args.l2_leaf_reg
         )
-        payloads = [
-            (
-                matrix,
-                sc,
-                folds != fold,
-                folds == fold,
-                y_target,
-                reg_params,
-                thread_count,
-                str(args.out / f"model_fold{fold}.cbm"),
-                args.use_scaffold,
+        exact_only = args.mode == "exact"
+        payloads = []
+        for fold in range(args.folds):
+            tr = (folds != fold) & (exact if exact_only else True)
+            va = (folds == fold) & (exact if exact_only else True)
+            payloads.append(
+                (
+                    matrix,
+                    sc,
+                    tr,
+                    va,
+                    y_target,
+                    reg_params,
+                    thread_count,
+                    str(args.out / f"model_fold{fold}.cbm"),
+                    args.use_scaffold,
+                )
             )
-            for fold in range(args.folds)
-        ]
         if jobs == 1:
             results = [_train_reg_fold(payload) for payload in payloads]
         else:
             with ProcessPoolExecutor(max_workers=jobs) as pool:
                 results = list(pool.map(_train_reg_fold, payloads))
         for fold, predictions in enumerate(results):
-            oof_reg[folds == fold] = predictions
+            if exact_only:
+                oof_reg[(folds == fold) & exact] = predictions
+            else:
+                oof_reg[folds == fold] = predictions
 
     if args.mode == "twostage":
         pred_si = inverse_target(
@@ -309,18 +316,23 @@ def main(argv: list[str] | None = None) -> int:
     else:
         pred_si = inverse_target(oof_reg, args.target)
 
-    metrics = regression_metrics(y_si, pred_si)
+    eval_mask = exact.astype(bool) if args.mode == "exact" else np.ones(len(frame), bool)
+    metrics = regression_metrics(y_si[eval_mask], pred_si[eval_mask])
     capped_mask = is_capped == 1
     exact_mask = is_capped == 0
-    per_group = {
-        "capped": regression_metrics(y_si[capped_mask], pred_si[capped_mask]),
-        "exact": regression_metrics(y_si[exact_mask], pred_si[exact_mask]),
-    } if args.mode == "twostage" else {}
+    per_group = (
+        {
+            "capped": regression_metrics(y_si[capped_mask], pred_si[capped_mask]),
+            "exact": regression_metrics(y_si[exact_mask], pred_si[exact_mask]),
+        }
+        if args.mode == "twostage"
+        else {}
+    )
 
     dummy = np.zeros(len(frame))
     for fold in range(args.folds):
         dummy[folds == fold] = np.median(y_target[folds != fold])
-    dummy_metrics = regression_metrics(y_si, inverse_target(dummy, args.target))
+    dummy_metrics = regression_metrics(y_si[eval_mask], inverse_target(dummy, args.target)[eval_mask])
 
     report = {
         "data": str(args.data),
