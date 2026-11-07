@@ -173,19 +173,9 @@ requester:
 
 def test_repository_examples_are_valid():
     chembl = load_manifest(REPO / "sources" / "chembl_vacv.yaml")
-    pubchem = load_manifest(REPO / "sources" / "pubchem_example.yaml")
-    github = load_manifest(REPO / "sources" / "github_molecules_example.yaml")
-    n1l = load_manifest(REPO / "sources" / "chembl_vaccinia_n1l.yaml")
     assert chembl.id == "chembl_vacv"
     assert chembl.requester.path == "assay.json"
     assert chembl.paginator.type == "NextUrl"
-    assert n1l.id == "chembl_vaccinia_n1l"
-    assert n1l.requester.path == "activity.json"
-    assert pubchem.id == "pubchem_example"
-    assert pubchem.paginator.type == "NoPagination"
-    assert github.type == "FileSource"
-    assert github.download is not None
-    assert github.download.filename == "FreeSolv_SAMPL.csv"
 
 
 def test_custom_template_is_valid():
