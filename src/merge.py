@@ -96,7 +96,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="input dataset CSV; repeatable, earlier wins on duplicate SMILES",
     )
     parser.add_argument("--test", type=Path, default=None)
-    parser.add_argument("--out", type=Path, default=Path("data/dataset.csv"))
+    parser.add_argument("--out", type=Path, default=Path("data/common/dataset.csv"))
     return parser
 
 

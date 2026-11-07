@@ -162,11 +162,14 @@ class PubchemSource:
                     else:
                         continue
 
-                    standardized = (
-                        record.get("Standard Value")
-                        or record.get("PubChem Standard Value")
-                        or ""
-                    )
+                    raw_standard = record.get("Standard Value")
+                    pubchem_standard = record.get("PubChem Standard Value")
+                    standardized = raw_standard or pubchem_standard or ""
+                    units = record.get("Standard Units") or ""
+                    # PubChem Standard Value is always in micromolar; some
+                    # assay CSV files omit the Standard Units column entirely.
+                    if not units and pubchem_standard not in (None, ""):
+                        units = "uM"
 
                     entry = {
                         "source": self.id,
@@ -176,7 +179,7 @@ class PubchemSource:
                         "type": kind,
                         "measure": measure,
                         "value": standardized,
-                        "units": record.get("Standard Units") or "",
+                        "units": units,
                         "value_um": None,
                         "relation": "=",
                         "cell_line": cell_line,

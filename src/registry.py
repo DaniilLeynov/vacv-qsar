@@ -63,7 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python -m src.registry",
         description="Merge every found source into one common table.",
     )
-    parser.add_argument("--organizers", type=Path, default=Path("data/dataset.csv"))
+    parser.add_argument("--organizers", type=Path, default=Path("data/common/dataset.csv"))
     parser.add_argument("--chembl", type=Path, default=Path("data/dataset_chembl.csv"))
     parser.add_argument(
         "--paper",

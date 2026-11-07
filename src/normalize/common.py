@@ -51,19 +51,32 @@ def canonical_unit(unit: str | None) -> str:
     return text
 
 
-def to_um(value: float, unit: str | None, molecular_weight: float | None = None) -> float:
+def unit_factor(unit: str | None, molecular_weight: float | None = None) -> float:
+    """Return the multiplier that converts `unit` to uM.
+
+    The factor is vector-friendly: it can be computed once per unit for molar
+    units, and once per molecule for mass units.
+    """
     canonical = canonical_unit(unit)
     if canonical in _MOLAR_TO_UM:
-        return float(value) * _MOLAR_TO_UM[canonical]
+        return _MOLAR_TO_UM[canonical]
     if canonical in _MASS_TO_MG_L:
         if not molecular_weight or molecular_weight <= 0:
             raise UnitError(
                 f"unit {unit!r} needs a molecular weight for conversion to uM"
             )
-        return float(value) * _MASS_TO_MG_L[canonical] * 1000.0 / molecular_weight
+        return _MASS_TO_MG_L[canonical] * 1000.0 / molecular_weight
     if canonical in {"%", "percent"}:
         raise UnitError("percent is not a concentration")
     raise UnitError(f"unsupported concentration unit {unit!r}")
+
+
+def unit_needs_molecular_weight(unit: str | None) -> bool:
+    return canonical_unit(unit) in _MASS_TO_MG_L
+
+
+def to_um(value: float, unit: str | None, molecular_weight: float | None = None) -> float:
+    return float(value) * unit_factor(unit, molecular_weight)
 
 
 def parse_value(text) -> tuple[str, float]:
@@ -110,6 +123,34 @@ def selectivity_index(ic50_um: float, cc50_um: float) -> float | None:
 
 def selectivity_is_exact(ic50_relation: str, cc50_relation: str) -> bool:
     return is_exact(ic50_relation) and is_exact(cc50_relation)
+
+
+def normalize_cell_line(value: object) -> str:
+    """Lower-case a cell-line label and drop the generic word "cell"."""
+    if not isinstance(value, str) or not value.strip():
+        return ""
+    text = value.strip().lower()
+    text = re.sub(r"\bcells?\b", "", text)
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+
+def canonical_organism(value: object) -> str:
+    """Map long assay descriptions to a stable organism label."""
+    if not isinstance(value, str) or not value.strip():
+        return ""
+    text = value.strip()
+    lowered = text.lower()
+    for needle, label in (
+        ("vaccinia", "Vaccinia virus"),
+        ("cowpox", "Cowpox virus"),
+        ("ectromelia", "Ectromelia virus"),
+        ("monkeypox", "Monkeypox virus"),
+        ("mpox", "Monkeypox virus"),
+        ("variola", "Variola virus"),
+    ):
+        if needle in lowered:
+            return label
+    return text.split(",")[0].strip()
 
 
 def rdkit_available() -> bool:

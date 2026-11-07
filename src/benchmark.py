@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
+from . import dual_model
+from . import dual_predict
 from . import ensemble
 from . import predict as catboost_predict
 from . import random_forest
@@ -54,6 +56,13 @@ def _rfrobust_metrics() -> dict:
     )
 
 
+def _dual_metrics() -> dict:
+    payload = json.loads(
+        (RUNS / "dual" / "metrics.json").read_text(encoding="utf-8")
+    )
+    return payload["si"].get("blended", payload["si"]["calibrated"])
+
+
 def build_models() -> list[ModelSpec]:
     return [
         ModelSpec(
@@ -61,7 +70,7 @@ def build_models() -> list[ModelSpec]:
             train=lambda: catboost_train.main(
                 [
                     "--data",
-                    "data/dataset.csv",
+                    "data/common/dataset.csv",
                     "--out",
                     str(RUNS / "catboost"),
                     "--model",
@@ -113,7 +122,7 @@ def build_models() -> list[ModelSpec]:
                 [
                     "train",
                     "--train",
-                    "data/dataset.csv",
+                    "data/common/dataset.csv",
                     "--organizers",
                     "data/organizers/train.csv",
                     "--out",
@@ -132,6 +141,46 @@ def build_models() -> list[ModelSpec]:
                 ]
             ),
             metrics=_ensemble_metrics,
+        ),
+        ModelSpec(
+            name="dual",
+            train=lambda: dual_model.main(
+                [
+                    "--ic50-targets",
+                    "data/dual/ic50_targets.csv",
+                    "--cc50-targets",
+                    "data/dual/cc50_targets.csv",
+                    "--organizers",
+                    "data/organizers/train.csv",
+                    "--test",
+                    "data/organizers/test.csv",
+                    "--out",
+                    str(RUNS / "dual"),
+                    "--feature-set",
+                    "rf_bits_maccs",
+                    "--jobs",
+                    "0",
+                    "--group",
+                    "smiles",
+                    "--seed",
+                    "42",
+                    "--iterations",
+                    "300",
+                    "--fine-tune-iterations",
+                    "100",
+                ]
+            ),
+            predict=lambda out: dual_predict.main(
+                [
+                    "--model",
+                    str(RUNS / "dual"),
+                    "--test",
+                    "data/organizers/test.csv",
+                    "--out",
+                    str(out),
+                ]
+            ),
+            metrics=_dual_metrics,
         ),
         ModelSpec(
             name="rfrobust",

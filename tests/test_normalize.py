@@ -2,14 +2,18 @@ import pytest
 
 from src.normalize.common import (
     UnitError,
+    canonical_organism,
     canonical_unit,
     is_exact,
+    normalize_cell_line,
     normalize_relation,
     parse_value,
     selectivity_index,
     selectivity_is_exact,
     standardize_smiles,
     to_um,
+    unit_factor,
+    unit_needs_molecular_weight,
 )
 
 
@@ -68,3 +72,20 @@ def test_standardize_smiles_keeps_text_without_rdkit():
     assert standardize_smiles(" CCO ") == "CCO"
     assert standardize_smiles("") is None
     assert canonical_unit("ug.mL-1") == "ug/ml"
+
+
+def test_unit_factor_and_mass_detection():
+    assert unit_factor("nM") == pytest.approx(0.001)
+    assert unit_factor("mg/l", molecular_weight=100) == pytest.approx(10.0)
+    assert unit_needs_molecular_weight("ug/ml") is True
+    assert unit_needs_molecular_weight("nM") is False
+
+
+def test_context_normalisation():
+    assert normalize_cell_line("HeLa cells") == "hela"
+    assert normalize_cell_line("Vero") == "vero"
+    assert canonical_organism("Vaccinia virus (strain Copenhagen), Vero") == (
+        "Vaccinia virus"
+    )
+    assert canonical_organism("Cowpox virus") == "Cowpox virus"
+    assert canonical_organism("") == ""

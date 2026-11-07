@@ -65,3 +65,16 @@ def test_pubchem_load_and_pair(tmp_path):
 def test_missing_raw_dir_raises(tmp_path):
     with pytest.raises(SourceError, match="not found"):
         PubchemSource().load(tmp_path)
+
+
+def test_pubchem_standard_value_defaults_to_micromolar(tmp_path):
+    out = tmp_path / "pubchem"
+    out.mkdir()
+    row = ",,60614,CCO,,,,,32.47,IC50,=,,,,Unspecified"
+    (out / "aid_2.csv").write_text(HEADER + row + "\n", encoding="utf-8")
+
+    measurements = PubchemSource().load(tmp_path)
+    hit = measurements[(measurements["source_id"] == "60614")].iloc[0]
+
+    assert hit["units"] == "uM"
+    assert hit["value_um"] == pytest.approx(32.47)
