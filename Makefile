@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := benchmark
+
 PY ?= .venv/bin/python
 SOURCES ?= sources
 OUT ?= data/raw
@@ -5,7 +7,7 @@ MODEL ?= catboost
 TRAIN_OUT ?= runs/$(MODEL)
 VENV_FLAGS ?= --system-site-packages
 
-.PHONY: venv chembl data data-selected data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest submit submit-catboost submit-randomforest test lint
+.PHONY: benchmark venv chembl data data-selected data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest submit submit-catboost submit-randomforest test lint
 
 venv:
 	python3 -m venv $(VENV_FLAGS) .venv
@@ -35,6 +37,9 @@ list:
 
 fetch:
 	$(PY) -m src.fetch --all --out $(OUT)
+
+benchmark:
+	$(PY) -m src.benchmark
 
 train:
 	@$(MAKE) --no-print-directory train-$(MODEL)
