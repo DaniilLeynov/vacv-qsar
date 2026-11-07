@@ -2,14 +2,39 @@ cmake_minimum_required(VERSION 3.16)
 project(vacv_qsar NONE)
 
 set(MODEL "catboost" CACHE STRING "Model for train/submit: catboost or randomforest")
-set(PYTHON "${CMAKE_SOURCE_DIR}/.venv/bin/python" CACHE FILEPATH "Python interpreter")
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+if(WIN32)
+  set(VENV_PYTHON "${CMAKE_SOURCE_DIR}/.venv/Scripts/python.exe")
+else()
+  set(VENV_PYTHON "${CMAKE_SOURCE_DIR}/.venv/bin/python")
+endif()
+
+if(EXISTS "${VENV_PYTHON}")
+  set(_default_python "${VENV_PYTHON}")
+else()
+  set(_default_python "${Python3_EXECUTABLE}")
+endif()
+set(PYTHON "${_default_python}" CACHE FILEPATH "Python interpreter")
 
 function(py_target name)
   add_custom_target(${name}
-    COMMAND ${CMAKE_COMMAND} -E env PYTHONWARNINGS=ignore ${PYTHON} ${ARGN}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND "${CMAKE_COMMAND}" -E env "PYTHONWARNINGS=ignore" "${PYTHON}" ${ARGN}
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     USES_TERMINAL)
 endfunction()
+
+add_custom_target(venv
+  COMMAND "${Python3_EXECUTABLE}" -m venv --system-site-packages .venv
+  COMMAND "${VENV_PYTHON}" -m pip install -r requirements.txt -r requirements-dev.txt
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  USES_TERMINAL)
+
+add_custom_target(setup
+  COMMAND "${CMAKE_COMMAND}" -E env "PYTHONWARNINGS=ignore" "${PYTHON}" -m pip install -r requirements.txt -r requirements-dev.txt
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  USES_TERMINAL)
 
 py_target(benchmark -m src.benchmark)
 py_target(test -m pytest -q)
