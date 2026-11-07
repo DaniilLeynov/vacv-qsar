@@ -21,10 +21,20 @@ venv:
 chembl:
 	@$(PY) -m chembl_downloader download -v
 
-data: data-selected
+data: data-augmented
 
 data-selected:
 	@$(PY) -m src.dataset --csv sources/selected.mapping.yaml --out data/dataset.csv --dropped data/processed/dropped.csv
+
+data-augmented:
+	@$(PY) -m src.dataset \
+		--csv sources/selected.mapping.yaml \
+		--csv sources/chembl_static.mapping.yaml \
+		--csv sources/paper_cidofovir.mapping.yaml \
+		--csv sources/paper_bmcl2022.mapping.yaml \
+		--csv sources/paper_adamantane2021.mapping.yaml \
+		--out data/processed/dataset_augmented.csv --dropped data/processed/dropped_augmented.csv
+	@$(PY) -m src.merge --dataset data/processed/dataset_augmented.csv --out data/dataset.csv
 
 data-organizers:
 	@$(PY) -m src.dataset --csv sources/organizers.mapping.yaml --out data/dataset_organizers.csv --dropped data/processed/dropped_organizers.csv

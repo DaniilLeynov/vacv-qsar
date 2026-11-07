@@ -1,0 +1,9 @@
+# Pyrimidine-1-ol N-oxides (Bioorg. Med. Chem. Lett. 2022).
+id: paper_bmcl2022
+file: data/paper_bmcl2022.csv
+smiles: SMILES
+title: Title
+target: SI VACV
+cell_line: Culture
+organism: strain
+doi: doi

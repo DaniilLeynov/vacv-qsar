@@ -1,0 +1,9 @@
+# Cidofovir/brincidofovir series (Eur. J. Med. Chem. 2023).
+id: paper_cidofovir
+file: data/paper_cidofovir.csv
+smiles: SMILES
+title: Title
+target: SI VACV
+cell_line: Culture
+organism: strain
+doi: doi

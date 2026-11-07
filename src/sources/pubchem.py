@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..normalize.common import normalize_relation
+from ..normalize.common import UnitError, molecular_weight, normalize_relation, to_um
 from .base import MEASUREMENT_COLUMNS, SourceError
 
 EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
@@ -40,6 +40,18 @@ CELL_LINES = [
 ]
 
 POTENCY_MEASURES = {"IC50", "EC50"}
+CYTOTOXICITY_MEASURES = {"CC50", "TC50"}
+# Direct selectivity-index measures are already ratios (dimensionless); their
+# Standard Value is the SI itself, not a concentration.
+SELECTIVITY_MEASURES = {
+    "Ratio CC50/IC50",
+    "Selectivity Index",
+    "Selectivity index",
+    "Therapeutic index",
+    "Therapeutic Index",
+    "TI",
+    "TI50",
+}
 
 
 class PubchemSource:
@@ -143,10 +155,18 @@ class PubchemSource:
                     measure = (record.get("Standard Type") or "").strip()
                     if measure in POTENCY_MEASURES:
                         kind = "ic50"
-                    elif measure == "CC50":
+                    elif measure in CYTOTOXICITY_MEASURES:
                         kind = "cc50"
+                    elif measure in SELECTIVITY_MEASURES:
+                        kind = "si"
                     else:
                         continue
+
+                    standardized = (
+                        record.get("Standard Value")
+                        or record.get("PubChem Standard Value")
+                        or ""
+                    )
 
                     entry = {
                         "source": self.id,
@@ -155,7 +175,7 @@ class PubchemSource:
                         "smiles": record.get("PUBCHEM_EXT_DATASOURCE_SMILES") or "",
                         "type": kind,
                         "measure": measure,
-                        "value": record.get("Standard Value") or "",
+                        "value": standardized,
                         "units": record.get("Standard Units") or "",
                         "value_um": None,
                         "relation": "=",
@@ -173,16 +193,24 @@ class PubchemSource:
                     except ValueError:
                         entry["dropped_reason"] = "invalid relation"
 
-                    standardized = record.get("PubChem Standard Value") or ""
                     if standardized == "":
                         entry["dropped_reason"] = (
                             entry["dropped_reason"] or "missing standardized value"
                         )
                     else:
                         try:
-                            entry["value_um"] = float(standardized)
-                        except ValueError:
-                            entry["dropped_reason"] = "invalid standardized value"
+                            if kind == "si":
+                                entry["value_um"] = float(standardized)
+                            else:
+                                entry["value_um"] = to_um(
+                                    float(standardized),
+                                    entry["units"],
+                                    molecular_weight(entry["smiles"]),
+                                )
+                        except (ValueError, UnitError) as exc:
+                            entry["dropped_reason"] = (
+                                entry["dropped_reason"] or str(exc)
+                            )
 
                     rows.append(entry)
 

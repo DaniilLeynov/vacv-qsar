@@ -1,0 +1,9 @@
+# Pre-built ChEMBL pairs (data/dataset_chembl.csv).
+id: chembl
+file: data/dataset_chembl.csv
+smiles: SMILES
+title: Title
+target: SI VACV
+cell_line: Culture
+organism: strain
+doi: doi

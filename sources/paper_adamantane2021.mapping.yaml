@@ -1,0 +1,9 @@
+# Adamantane carboxamides (Eur. J. Med. Chem. 2021).
+id: paper_adamantane2021
+file: data/paper_adamantane2021.csv
+smiles: SMILES
+title: Title
+target: SI VACV
+cell_line: Culture
+organism: strain
+doi: doi

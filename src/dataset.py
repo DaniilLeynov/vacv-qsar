@@ -109,6 +109,8 @@ def main(argv: list[str] | None = None) -> int:
             adapters.append(ChemblSource(args.chembl_db))
         elif args.chembl:
             adapters.append(ChemblSource.from_download())
+        if args.pubchem:
+            adapters.append(PubchemSource())
         for mapping in args.csv:
             adapters.append(CsvSource.from_config(mapping))
 
