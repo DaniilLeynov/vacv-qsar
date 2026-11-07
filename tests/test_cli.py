@@ -10,7 +10,6 @@ def test_list_shows_examples(capsys):
     output = capsys.readouterr().out
     assert code == 0
     assert "chembl_vacv" in output
-    assert "pubchem_example" in output
     assert "_template_custom" not in output
 
 

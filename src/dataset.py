@@ -16,6 +16,7 @@ from .sources.base import (
 )
 from .sources.chembl import ChemblSource
 from .sources.generic_csv import CsvSource
+from .sources.pubchem import PubchemSource
 
 DEFAULT_RAW = Path("data/raw")
 DEFAULT_OUT = Path("data/dataset.csv")
@@ -75,6 +76,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--chembl-db",
         type=Path,
         help="path to an existing ChEMBL SQLite dump",
+    )
+    parser.add_argument(
+        "--pubchem",
+        action="store_true",
+        help="use PubChem bioassays for vaccinia + IC50 (downloads if needed)",
     )
     parser.add_argument(
         "--csv",

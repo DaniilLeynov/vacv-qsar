@@ -4,7 +4,7 @@ OUT ?= data/raw
 TRAIN_OUT ?= runs/catboost
 VENV_FLAGS ?= --system-site-packages
 
-.PHONY: venv chembl data data-organizers data-chembl datasets train submit list fetch test lint
+.PHONY: venv chembl data data-organizers data-chembl datasets registry list fetch train submit test lint
 
 venv:
 	python3 -m venv $(VENV_FLAGS) .venv
@@ -22,6 +22,9 @@ data-chembl:
 	$(PY) -m src.dataset --chembl --out data/dataset_chembl.csv --dropped data/processed/dropped_chembl.csv
 
 datasets: data-organizers data-chembl
+
+registry:
+	$(PY) -m src.registry --out data/found.csv
 
 list:
 	$(PY) -m src.fetch --list
