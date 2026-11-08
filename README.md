@@ -1,141 +1,164 @@
 # VACV QSAR
 
-Модель машинного обучения, которая по SMILES-записи молекулы предсказывает
-индекс селективности против вируса оспы (штамм VACV):
+**Команда:** три кота
+
+Модель предсказывает индекс селективности молекулы против вируса оспы
+(штамм VACV) по SMILES:
 
 ```
 SI VACV = CC50 / IC50
 ```
 
-Задача — регрессия `SI VACV`; метрика — сырой MSE. `CC50_uM` и
-`IC50_uM_VACV` используются только для расчёта SI/метки и никогда не
-подаются в признаки.
+Задача — регрессия `SI VACV`, метрика — сырой MSE. `CC50_uM` и
+`IC50_uM_VACV` используются только для расчёта SI/метки и не подаются в
+признаки.
 
-## Быстрый старт
+## 1. Структура репозитория
+
+```
+Makefile                 команды обучения, бенчмарка и submission
+requirements.txt         зависимости Python
+src/
+  features.py            Morgan, MACCS, RDKit-дескрипторы, наборы признаков
+  normalize/common.py    единицы, цензурирование, стандартизация SMILES
+  sources/               адаптеры источников (ChEMBL, PubChem, CSV)
+  train.py               CatBoost-регрессия SI
+  predict.py             инференс CatBoost
+  random_forest.py       RandomForest на готовых признаках
+  ensemble.py            бленд RandomForest (raw) + HistGB (log1p)
+  dual_model.py          две головы IC50/CC50 → SI
+  dual_predict.py        инференс dual-модели
+  rf_robust.py           RobustForest + Ridge, CLI и подготовка данных
+  rf_robust_best.py      реализация RobustForest
+  chembl_pairs.py        парсинг ChEMBL SQLite
+  chembl_export.py       парсинг CSV-выгрузок ChEMBL
+  build_all.py           сборка organizers + ChEMBL + PubChem
+  augment_common.py      opt-in augmented-датасет для не-dual моделей
+  benchmark.py           сравнение моделей и выбор лучшей
+  fetch/, merge.py       инфраструктура выгрузки и склейки
+data/
+  common/                общие и opt-in базы
+  rf/                    данные randomforest
+  rf_robust/             данные RobustForest
+  dual/                  таргеты IC50/CC50 (генерируется)
+  organizers/            train/test/sample_submit
+  raw/, processed/       скачанные и промежуточные данные (gitignore)
+sources/                 маппинги источников
+tests/                   pytest
+```
+
+## 2. Данные и источники
+
+Используются:
+
+- таблица организаторов (`data/organizers/`);
+- ChEMBL 37 — локальный SQLite-дамп, парсится в `data/processed/chembl/`;
+- PubChem — assay через REST API, сохраняются в `data/raw/pubchem*/`.
+
+Загрузка и парсинг:
+
+```bash
+make chembl                              # скачать ChEMBL SQLite
+make chembl-pairs CHEMBL_DB=chembl_37.db # распарсить дамп
+make data                                # курируемая база data/common/dataset.csv
+make data-all                            # dataset_all.csv + data/dual/*
+make data-nondual                        # opt-in augmented-датасет
+```
+
+Сеть используется только на этапе выгрузки. Обучение и инференс работают с
+локальными файлами.
+
+Правила:
+
+- `CC50_uM` / `IC50_uM_VACV` и их производные — только метки, не признаки;
+- `SI = 0` означает отсутствие IC50/CC50, а не настоящий ноль;
+- молекулы теста исключаются из pretraining внешними данными;
+- единицы концентрации — мкМ.
+
+## 3. Подходы и модели
+
+| модель | идея |
+|---|---|
+| `catboost` | CatBoost на Morgan + MACCS + RDKit-дескрипторах |
+| `randomforest` | RandomForest на готовых признаках |
+| `ensemble` | RandomForest на сыром SI + HistGB на `log1p(SI)` |
+| `dual` | отдельные модели `log10(IC50)` и `log10(CC50)`, затем `SI = 10**(CC50−IC50)` |
+| `rfrobust` | RandomForest с капом SI + Ridge на `log1p(SI)` для хвоста |
+
+Для `rfrobust` дополнительно применяются:
+
+- восстановление `culture_clean`/`strain_clean` из source records;
+- снятие солей/гидратов и медианная агрегация реплик по
+  `(канонический SMILES, культура)`;
+- опционально neighbor-imputation условий и tail-признаки
+  (atom-pair / topological torsion).
+
+## 4. Эксперименты
+
+Проверялись:
+
+- наборы признаков для `dual`: Morgan, MACCS, RDKit-дескрипторы, их
+  комбинации, `rf_bits` и хиральные Morgan; выбран `rf_bits_maccs`;
+- очистка данных для `rfrobust`: снятие солей и медианная агрегация
+  реплик; включена в финальную модель;
+- альтернативные варианты `rfrobust`: neighbor-imputation условий,
+  отдельный классификатор `SI = 0`, atom-pair/topological-torsion в хвосте.
+  Эти варианты не вошли в финальную модель, так как ухудшали результат на
+  тесте;
+- полное расширение train ChEMBL/PubChem: отклонено из-за сдвига домена.
+
+## 5. Финальный пайплайн
 
 ```bash
 make venv
 make train MODEL=rfrobust
-make submit MODEL=rfrobust   # submissions/submission.csv
+make submit MODEL=rfrobust
+# -> submissions/submission.csv
 ```
 
-Финальная модель — `rfrobust` (RobustForest + Ridge). Обучение и инференс
-не требуют сети: `data/rf_robust/train_407.csv` закоммичен.
-
-## Бенчмарк
+По умолчанию `train-rfrobust` использует `--clean` (снятие солей +
+медианная агрегация). Отключить:
 
 ```bash
-make   # == make benchmark
+make train MODEL=rfrobust ROBUST_CLEAN=
 ```
 
-Обучает и сравнивает по OOF `mse_si`: `catboost`, `randomforest`,
-`ensemble`, `dual`, `rfrobust`; лучшая пишется в `submissions/submission.csv`.
-OOF-метрики считаются на разных наборах, поэтому сравнение ориентировочное.
+Параллелизм: `JOBS=0` — авто, `JOBS=1` — последовательно.
 
-## Данные
+## 6. Воспроизведение
 
-```
-data/
-  common/dataset.csv             # курируемая база catboost + ensemble (424 строки)
-  common/dataset_all.csv         # organizers + ChEMBL + PubChem (623 строки)
-  common/dataset_augmented.csv   # opt-in: база + отфильтрованные новые строки
-  rf/                            # randomforest, готовые признаки
-  rf_robust/train_407.csv        # RobustForest, таблица коллеги
-  dual/                          # таргеты IC50/CC50 (генерируется make data-all)
-  organizers/                    # train/test/sample_submit
-  raw/                           # скачанные дампы (gitignore)
-  processed/                     # промежуточные выгрузки (gitignore)
-```
-
-### data/rf_robust/train_407.csv
-
-Подготовленная таблица из архива коллеги (`rf_robust_best.zip`): 407 строк —
-319 официальных наблюдений организаторов и 88 дополнительных. Колонки:
-`SI VACV`, `SMILES`, канонический SMILES, готовые признаки (Morgan 2048 бит с
-хиральностью, RDKit-дескрипторы, признаки ароматических колец), а также
-`culture_clean`, `strain_clean`, `official_train`. `SI VACV = 0` означает
-отсутствие IC50/CC50.
-
-## Выгрузка и парсинг внешних данных
-
-Сеть нужна только на этапе выгрузки.
+Из чистого клона:
 
 ```bash
-make chembl                              # скачать ChEMBL SQLite (~30 ГБ)
-make chembl-pairs CHEMBL_DB=chembl_37.db # распарсить в data/processed/chembl
-make data-all                            # собрать dataset_all.csv и data/dual/*
-make data-nondual                        # собрать data/common/dataset_augmented.csv
-```
-
-PubChem assay скачиваются адаптером `src/sources/pubchem.py`
-(`PubchemSource.fetch_raw`), повторный запуск продолжает с места остановки.
-
-## Модели
-
-```bash
-make train MODEL=catboost
-make train MODEL=randomforest
-make train MODEL=ensemble
-make train MODEL=dual
+make venv
 make train MODEL=rfrobust
-make submit MODEL=<model>
-make submit MODEL=<model> SUBMISSION=submissions/out.csv
-```
-
-### rfrobust
-
-```bash
-make train MODEL=rfrobust              # по умолчанию --clean
-make train MODEL=rfrobust ROBUST_CLEAN=  # без очистки
-```
-
-`--clean`: снятие солей/гидратов и медианная агрегация реплик по
-`(канонический SMILES, культура)`. Опционально `--neighbor-imputation`
-(заполнение culture/strain по сходству Morgan) и `--tail-features`
-(atom-pair + topological-torsion в Ridge-хвост).
-
-### dual
-
-```bash
-make train MODEL=dual FEATURE_SET=rf_bits_maccs
-```
-
-Обучает `log10(IC50)` и `log10(CC50)` отдельно, затем
-`SI = 10 ** (pred_cc50 - pred_ic50)`.
-
-## Параллелизм
-
-```bash
-make train MODEL=dual JOBS=0
-make train MODEL=rfrobust JOBS=0
-```
-
-`JOBS=0` — авто по числу ядер, `JOBS=1` — последовательно.
-
-## Правила
-
-- `CC50_uM` / `IC50_uM_VACV` и их производные — только для расчёта SI/метки,
-  не в признаки (утечка таргета).
-- `SI = 0` — «нет IC50/CC50», а не настоящий ноль.
-- Тестовые молекулы исключаются из pretraining внешними данными.
-- Единицы концентрации — мкМ.
-
-## Проверки
-
-```bash
+make submit MODEL=rfrobust
 make test
 make lint
 ```
 
-## Структура
+Данные `data/rf_robust/train_407.csv` закоммичены, поэтому обучение финальной
+модели не требует сети. Для dual и расширенных экспериментов нужны
+скачанные ChEMBL/PubChem (`make chembl`, `make chembl-pairs`, `make data-all`).
 
-```
-AGENTS.md            # правила для контрибьюторов
-README.md            # этот файл
-Makefile             # команды
-requirements.txt     # зависимости
-src/                 # data, features, models, predict
-data/                # данные по моделям
-sources/             # маппинги источников
-tests/               # pytest
-```
+## 7. Локальные метрики
+
+`make` (бенчмарк, OOF, 5 фолдов):
+
+| модель | OOF MSE(SI) | RMSE | MAE |
+|---|---:|---:|---:|
+| **rfrobust** | **181 968.9** | **426.6** | **132.0** |
+| ensemble | 3 168 204.5 | 1 779.9 | 195.5 |
+| catboost | 3 231 454.8 | 1 797.6 | 258.3 |
+| randomforest | 3 301 680.7 | 1 817.1 | 205.3 |
+| dual | 4 043 985.5 | 2 011.0 | 196.5 |
+
+OOF-метрики считаются на разных наборах, поэтому сравнение ориентировочное.
+Сырой MSE сильно зависит от редких больших SI.
+
+## 8. Ограничения
+
+- Данных мало; хвост `SI > 1000` даёт основную часть ошибки.
+- Внешние ChEMBL/PubChem данные имеют другой домен и шкалу SI.
+- Публичный лидерборд чувствителен к хвосту; OOF-MSE не всегда отражает
+  качество на тесте.
