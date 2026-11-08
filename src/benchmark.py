@@ -193,6 +193,7 @@ def build_models() -> list[ModelSpec]:
                     "data/rf_robust/train_407.csv",
                     "--out",
                     str(RUNS / "rfrobust"),
+                    "--clean",
                 ]
             ),
             predict=lambda out: rf_robust.main(

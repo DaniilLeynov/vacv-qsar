@@ -13,6 +13,7 @@ CC50_TARGETS ?= data/dual/cc50_targets.csv
 SUBMISSION ?= submissions/submission.csv
 TRAIN_DATA ?= data/common/dataset.csv
 AUGMENTED_DATA ?= data/common/dataset_augmented.csv
+ROBUST_CLEAN ?= --clean
 VENV_FLAGS ?= --system-site-packages
 
 export PYTHONWARNINGS := ignore
@@ -115,7 +116,7 @@ train-dual:
 train-rfrobust:
 	@$(PY) -m src.rf_robust train \
 		--train data/rf_robust/train_407.csv \
-		--out runs/rfrobust --jobs $(JOBS)
+		--out runs/rfrobust --jobs $(JOBS) $(ROBUST_CLEAN)
 
 ablation:
 	@$(PY) -m src.feature_ablation \
