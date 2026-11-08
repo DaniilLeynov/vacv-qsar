@@ -26,6 +26,8 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors, rdFingerprintGenerator
 from sklearn.model_selection import GroupKFold
 
+from .normalize.common import standardize_smiles_clean
+
 from .rf_robust_best import (
     DESCRIPTOR_NAMES,
     DESCRIPTORS,
@@ -37,6 +39,7 @@ from .rf_robust_best import (
     TYPES,
     FIELDS,
     RobustForest,
+    SOURCE,
     neighbors,
     recover,
 )
@@ -362,6 +365,43 @@ def prepare_test_frame(frame: pd.DataFrame, jobs: int = 1) -> pd.DataFrame:
     )
 
 
+def clean_training_table(frame: pd.DataFrame, jobs: int = 1) -> pd.DataFrame:
+    """Salt-strip SMILES and median-aggregate replicates per molecule/cell."""
+    raw = pd.DataFrame(
+        {
+            "SMILES": frame["SMILES"].map(standardize_smiles_clean),
+            "SI VACV": pd.to_numeric(frame.get("SI VACV"), errors="coerce"),
+            "Culture": frame.get("culture_clean", ""),
+            "strain": frame.get("strain_clean", ""),
+            "Title": frame.get("Title", ""),
+            "official_train": frame.get(SOURCE, True),
+        }
+    )
+    raw = raw[raw["SMILES"].notna() & raw["SMILES"].ne("")].copy()
+    raw = raw[raw["SI VACV"].notna()].copy()
+    raw["_cell"] = raw["Culture"].fillna("unknown").astype(str)
+    grouped = (
+        raw.groupby(["SMILES", "_cell"], sort=False)
+        .agg(
+            SI=("SI VACV", "median"),
+            official_train=("official_train", "max"),
+            Culture=("Culture", "first"),
+            strain=("strain", "first"),
+            Title=("Title", "first"),
+        )
+        .reset_index()
+    )
+    grouped = grouped.rename(
+        columns={"SMILES": "SMILES", "SI": "SI VACV"}
+    )
+    prepared = prepare_test_frame(
+        grouped[["SMILES", "Culture", "strain", "Title"]], jobs=jobs
+    )
+    prepared[SOURCE] = grouped["official_train"].astype(bool).to_numpy()
+    prepared[TARGET] = grouped["SI VACV"].to_numpy()
+    return prepared
+
+
 def _metrics(y: np.ndarray, pred: np.ndarray) -> dict:
     y = np.asarray(y, dtype=float)
     pred = np.clip(np.asarray(pred, dtype=float), 0.0, None)
@@ -420,6 +460,11 @@ def build_parser() -> argparse.ArgumentParser:
     train.add_argument("--out", type=Path, default=DEFAULT_OUT)
     train.add_argument("--folds", type=int, default=5)
     train.add_argument(
+        "--clean",
+        action="store_true",
+        help="salt-strip SMILES and median-aggregate replicates before training",
+    )
+    train.add_argument(
         "--jobs", type=int, default=0, help="parallel fold workers (0 = auto)"
     )
     train.add_argument(
@@ -442,11 +487,17 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "train":
-        frame = pd.read_csv(args.train)
-        if TARGET not in frame:
-            raise ValueError(f"{args.train}: missing {TARGET}")
         args.out.mkdir(parents=True, exist_ok=True)
         records = build_source_records()
+        cpu = os.cpu_count() or 1
+        if args.clean:
+            frame = clean_training_table(
+                pd.read_csv(args.train), jobs=args.jobs or cpu
+            )
+        else:
+            frame = pd.read_csv(args.train)
+            if TARGET not in frame:
+                raise ValueError(f"{args.train}: missing {TARGET}")
         frame = frame.copy()
         if "source_row" not in frame:
             frame["source_row"] = np.arange(len(frame)) + 1

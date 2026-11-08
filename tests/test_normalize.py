@@ -11,6 +11,7 @@ from src.normalize.common import (
     selectivity_index,
     selectivity_is_exact,
     standardize_smiles,
+    standardize_smiles_clean,
     to_um,
     unit_factor,
     unit_needs_molecular_weight,
@@ -79,6 +80,12 @@ def test_unit_factor_and_mass_detection():
     assert unit_factor("mg/l", molecular_weight=100) == pytest.approx(10.0)
     assert unit_needs_molecular_weight("ug/ml") is True
     assert unit_needs_molecular_weight("nM") is False
+
+
+def test_strip_salts_keeps_largest_fragment():
+    assert standardize_smiles_clean("c1ccccc1N.Cl") == "Nc1ccccc1"
+    assert standardize_smiles_clean("CCN.Cl") == "CCN"
+    assert standardize_smiles_clean("") is None
 
 
 def test_context_normalisation():

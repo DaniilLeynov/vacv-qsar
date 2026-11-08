@@ -153,6 +153,28 @@ def canonical_organism(value: object) -> str:
     return text.split(",")[0].strip()
 
 
+def strip_salts(smiles: str | None) -> str | None:
+    """Remove salts/hydrates/counter-ions, keep the largest fragment."""
+    if not isinstance(smiles, str) or not smiles.strip():
+        return None
+    if not rdkit_available():
+        return smiles.strip()
+    from rdkit import Chem
+    from rdkit.Chem.MolStandardize import rdMolStandardize
+
+    molecule = Chem.MolFromSmiles(smiles)
+    if molecule is None:
+        return None
+    molecule = rdMolStandardize.Cleanup(molecule)
+    molecule = rdMolStandardize.LargestFragmentChooser().choose(molecule)
+    return Chem.MolToSmiles(molecule)
+
+
+def standardize_smiles_clean(smiles: str | None) -> str | None:
+    """Canonical SMILES with salts removed (no charge neutralisation)."""
+    return strip_salts(smiles)
+
+
 def rdkit_available() -> bool:
     try:
         import rdkit  # noqa: F401
