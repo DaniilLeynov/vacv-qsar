@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import shutil
 import warnings
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ warnings.filterwarnings("ignore")
 
 RUNS = Path("runs")
 DEFAULT_SUBMISSION = Path("submissions/submission.csv")
+TRAIN_DATA = os.environ.get("VACV_TRAIN_DATA", "data/common/dataset.csv")
 
 
 @dataclass
@@ -70,7 +72,7 @@ def build_models() -> list[ModelSpec]:
             train=lambda: catboost_train.main(
                 [
                     "--data",
-                    "data/common/dataset.csv",
+                    TRAIN_DATA,
                     "--out",
                     str(RUNS / "catboost"),
                     "--model",
@@ -122,7 +124,7 @@ def build_models() -> list[ModelSpec]:
                 [
                     "train",
                     "--train",
-                    "data/common/dataset.csv",
+                    TRAIN_DATA,
                     "--organizers",
                     "data/organizers/train.csv",
                     "--out",

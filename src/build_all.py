@@ -324,6 +324,15 @@ def build(
         if column not in measurements:
             measurements[column] = ""
 
+    dataset, targets, dropped = assemble(measurements, conflict_parts)
+    return dataset, measurements, targets, dropped
+
+
+def assemble(
+    measurements: pd.DataFrame,
+    conflict_parts: list[pd.DataFrame] | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Build wide SI rows and endpoint targets from measurement-level rows."""
     pair_frame = measurements.copy()
     pair_frame["type"] = pair_frame["endpoint"]
     pair_frame["title"] = pair_frame["Title"]
@@ -343,14 +352,19 @@ def build(
     ].copy()
     parsed = parsed.rename(columns={"Title": "source_id"}).assign(stage="parse")
     quality = [
-        item.assign(stage="quality") for item in conflict_parts if not item.empty
+        item.assign(stage="quality")
+        for item in (conflict_parts or [])
+        if not item.empty
     ]
     dropped_frames = [
         item.reset_index(drop=True).loc[:, ~item.columns.duplicated()]
         for item in [unpaired, problems, parsed, *quality]
     ]
-    return valid, measurements, build_targets(endpoints), pd.concat(
-        dropped_frames, ignore_index=True, sort=False
+    endpoints = measurements[measurements["endpoint"].isin(["ic50", "cc50"])]
+    return (
+        valid,
+        build_targets(endpoints),
+        pd.concat(dropped_frames, ignore_index=True, sort=False),
     )
 
 
@@ -380,6 +394,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="drop censored/conflicting organizer IC50 labels (experimental)",
     )
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="append new parsed rows to existing measurement/target files",
+    )
     return parser
 
 
@@ -399,6 +418,12 @@ def main(argv: list[str] | None = None) -> int:
         exclude,
         clean_ic50=args.clean_ic50,
     )
+    if args.append and args.measurements.exists():
+        old = pd.read_csv(args.measurements)
+        measurements = pd.concat([old, measurements], ignore_index=True)
+        measurements = measurements.drop_duplicates().reset_index(drop=True)
+        dataset, targets, dropped = assemble(measurements)
+        print(f"append: {len(measurements)} measurements after merge")
 
     ic50 = targets[targets["endpoint"] == "ic50"].copy()
     cc50 = targets[targets["endpoint"] == "cc50"].copy()

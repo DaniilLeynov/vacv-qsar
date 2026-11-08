@@ -513,6 +513,7 @@ def write_outputs(
     measurements_path: Path | None = None,
     targets_path: Path | None = None,
     pairs_path: Path | None = None,
+    append: bool = False,
 ) -> tuple[Path, Path, Path]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -525,6 +526,10 @@ def write_outputs(
         (pairs_path, pairs),
     ):
         path.parent.mkdir(parents=True, exist_ok=True)
+        if append and path.exists():
+            old = pd.read_csv(path)
+            frame = pd.concat([old, frame], ignore_index=True)
+            frame = frame.drop_duplicates().reset_index(drop=True)
         frame.to_csv(path, index=False)
     return measurements_path, targets_path, pairs_path
 
@@ -579,6 +584,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="debug: stop after N activities",
     )
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="append new parsed rows to existing output files",
+    )
     return parser
 
 
@@ -623,6 +633,7 @@ def main(argv: list[str] | None = None) -> int:
         args.measurements,
         args.targets,
         args.pairs,
+        append=args.append,
     )
     dropped = measurements[measurements["dropped_reason"] != ""]
     print(f"measurements: {len(measurements)} rows ({len(dropped)} dropped)")

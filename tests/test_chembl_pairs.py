@@ -10,6 +10,7 @@ from src.chembl_pairs import (
     build_pairs,
     build_targets,
     load_measurements,
+    write_outputs,
 )
 
 SCHEMA = """
@@ -170,3 +171,16 @@ def test_empty_measurements_build_empty_tables():
     empty = pd.DataFrame(columns=["dropped_reason"])
     assert build_targets(empty).empty
     assert build_pairs(empty).empty
+
+
+def test_write_outputs_append(tmp_path):
+    first = pd.DataFrame({"Title": ["a"]})
+    second = pd.DataFrame({"Title": ["b"]})
+    targets = pd.DataFrame(columns=TARGET_COLUMNS)
+    pairs = pd.DataFrame(columns=PAIR_COLUMNS)
+
+    write_outputs(first, targets, pairs, tmp_path)
+    write_outputs(second, targets, pairs, tmp_path, append=True)
+
+    result = pd.read_csv(tmp_path / "chembl_measurements.csv")
+    assert list(result["Title"]) == ["a", "b"]

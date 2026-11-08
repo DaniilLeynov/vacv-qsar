@@ -188,6 +188,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--min-um", type=float, default=1e-6)
     parser.add_argument("--max-um", type=float, default=1e6)
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="append new parsed rows to existing output files",
+    )
     return parser
 
 
@@ -217,6 +222,7 @@ def main(argv: list[str] | None = None) -> int:
         args.measurements,
         args.targets,
         args.pairs,
+        append=args.append,
     )
     dropped = measurements[measurements["dropped_reason"] != ""]
     print(f"measurements: {len(measurements)} rows ({len(dropped)} dropped)")

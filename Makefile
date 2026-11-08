@@ -11,14 +11,16 @@ FEATURE_SET ?= rf_bits_maccs
 IC50_TARGETS ?= data/dual/ic50_targets.csv
 CC50_TARGETS ?= data/dual/cc50_targets.csv
 SUBMISSION ?= submissions/submission.csv
+TRAIN_DATA ?= data/common/dataset.csv
+AUGMENTED_DATA ?= data/common/dataset_augmented.csv
 VENV_FLAGS ?= --system-site-packages
 
 export PYTHONWARNINGS := ignore
 
-.PHONY: benchmark venv chembl chembl-pairs data data-all data-selected data-augmented data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest train-ensemble train-dual train-rfrobust ablation submit submit-catboost submit-randomforest submit-ensemble submit-dual submit-rfrobust test lint
+.PHONY: benchmark venv chembl chembl-pairs data data-all data-nondual data-selected data-augmented data-organizers data-chembl datasets registry list fetch train train-catboost train-randomforest train-ensemble train-dual train-rfrobust ablation submit submit-catboost submit-randomforest submit-ensemble submit-dual submit-rfrobust test lint
 
 benchmark:
-	@$(PY) -m src.benchmark
+	@VACV_TRAIN_DATA=$(TRAIN_DATA) $(PY) -m src.benchmark
 
 venv:
 	@python3 -m venv $(VENV_FLAGS) .venv
@@ -57,6 +59,16 @@ data-all:
 		--ic50-targets data/dual/ic50_targets.csv \
 		--cc50-targets data/dual/cc50_targets.csv \
 		--dropped data/dual/all_dropped.csv
+	@$(PY) -m src.augment_common \
+		--base data/common/dataset.csv \
+		--extra data/common/dataset_all.csv \
+		--out $(AUGMENTED_DATA)
+
+data-nondual:
+	@$(PY) -m src.augment_common \
+		--base data/common/dataset.csv \
+		--extra data/common/dataset_all.csv \
+		--out $(AUGMENTED_DATA)
 
 data-organizers:
 	@$(PY) -m src.dataset --csv sources/organizers.mapping.yaml --out data/dataset_organizers.csv --dropped data/processed/dropped_organizers.csv
@@ -79,13 +91,13 @@ train:
 	@$(MAKE) --no-print-directory train-$(MODEL)
 
 train-catboost:
-	@$(PY) -m src.train --data data/common/dataset.csv --out runs/catboost --model catboost --mode exact --use-scaffold
+	@$(PY) -m src.train --data $(TRAIN_DATA) --out runs/catboost --model catboost --mode exact --use-scaffold
 
 train-randomforest:
 	@$(PY) -m src.random_forest train --train data/rf/train.csv --out runs/randomforest
 
 train-ensemble:
-	@$(PY) -m src.ensemble train --train data/common/dataset.csv --organizers data/organizers/train.csv --out runs/ensemble
+	@$(PY) -m src.ensemble train --train $(TRAIN_DATA) --organizers data/organizers/train.csv --out runs/ensemble
 
 train-dual:
 	@test -f $(IC50_TARGETS) -a -f $(CC50_TARGETS) || $(MAKE) --no-print-directory data-all
