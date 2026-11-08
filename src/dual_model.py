@@ -806,8 +806,13 @@ def main(argv: list[str] | None = None) -> int:
         drop=True
     )
     if base.empty:
-        print("no pre-training rows left after SMILES filtering", file=sys.stderr)
-        return 1
+        print(
+            "WARNING: no pre-training rows left after SMILES filtering; "
+            "both heads will be trained on organizer labels only. "
+            "Run `make data-all` with downloaded ChEMBL/PubChem data to use "
+            "larger pre-training.",
+            file=sys.stderr,
+        )
     if organizer_eval.empty:
         print("no valid organizer rows left", file=sys.stderr)
         return 1

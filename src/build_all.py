@@ -14,6 +14,7 @@ Nothing in this module goes to the network.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -245,6 +246,10 @@ def _read_pubchem(raw_dir: Path, names: tuple[str, ...]) -> pd.DataFrame:
         frames.append(frame)
         print(f"pubchem {name}: {len(frame)} measurements")
     if not frames:
+        print(
+            f"WARNING: no PubChem raw sets found under {raw_dir}; "
+            "dataset_all will use local sources only."
+        )
         return pd.DataFrame(columns=MEASUREMENT_COLUMNS)
     return pd.concat(frames, ignore_index=True)
 
@@ -269,6 +274,12 @@ def build(
     chembl_frame = (
         _read_chembl(Path(chembl)) if Path(chembl).exists() else pd.DataFrame()
     )
+    if chembl_frame.empty:
+        print(
+            f"WARNING: no ChEMBL rows from {chembl}; "
+            "dataset_all will use local sources only. "
+            "Run `make chembl-pairs` after downloading the dump."
+        )
 
     local_sources: list[tuple[str, Path]] = []
     if Path(organizers).exists():
@@ -399,6 +410,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="append new parsed rows to existing measurement/target files",
     )
+    parser.add_argument(
+        "--allow-local-only",
+        action="store_true",
+        help="allow overwriting a larger dataset_all with local-only sources",
+    )
     return parser
 
 
@@ -424,6 +440,19 @@ def main(argv: list[str] | None = None) -> int:
         measurements = measurements.drop_duplicates().reset_index(drop=True)
         dataset, targets, dropped = assemble(measurements)
         print(f"append: {len(measurements)} measurements after merge")
+
+    external_sources = {"chembl", "pubchem"}
+    has_external = measurements["source"].isin(external_sources).any()
+    if not has_external and not args.allow_local_only and args.out.exists():
+        old_rows = len(pd.read_csv(args.out))
+        if len(dataset) < old_rows:
+            print(
+                f"ERROR: refusing to overwrite {args.out} ({old_rows} rows) "
+                f"with local-only data ({len(dataset)} rows). "
+                "Download ChEMBL/PubChem first or pass --allow-local-only.",
+                file=sys.stderr,
+            )
+            return 1
 
     ic50 = targets[targets["endpoint"] == "ic50"].copy()
     cc50 = targets[targets["endpoint"] == "cc50"].copy()

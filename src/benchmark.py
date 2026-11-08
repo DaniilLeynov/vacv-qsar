@@ -66,7 +66,7 @@ def _dual_metrics() -> dict:
 
 
 def build_models() -> list[ModelSpec]:
-    return [
+    models = [
         ModelSpec(
             name="catboost",
             train=lambda: catboost_train.main(
@@ -210,6 +210,12 @@ def build_models() -> list[ModelSpec]:
             metrics=_rfrobust_metrics,
         ),
     ]
+    if not (
+        Path("data/dual/ic50_targets.csv").exists()
+        and Path("data/dual/cc50_targets.csv").exists()
+    ):
+        models = [model for model in models if model.name != "dual"]
+    return models
 
 
 def _quiet(call) -> tuple[int, str]:
