@@ -289,7 +289,7 @@ def load_measurements(
     if not db_path.exists():
         raise FileNotFoundError(
             f"ChEMBL SQLite dump not found at {db_path}. Download it first; "
-            "see doc/chembl.md"
+            "see README.md"
         )
 
     sql, params = _build_sql(endpoints, ic50_assay_types, exact_only, limit)
@@ -597,7 +597,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.db.exists():
         print(
             f"ERROR: ChEMBL dump not found at {args.db}. "
-            "Download it first; see doc/chembl.md",
+            "Download it first; see README.md",
             file=sys.stderr,
         )
         return 1

@@ -747,7 +747,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             "ERROR: target table not found: "
             + ", ".join(str(path) for path in missing_targets)
-            + ". Run `make data-all` first (see doc/chembl.md).",
+            + ". Run `make data-all` first (see README.md).",
             file=sys.stderr,
         )
         return 1
