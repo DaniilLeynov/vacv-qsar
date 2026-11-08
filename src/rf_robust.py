@@ -35,10 +35,14 @@ from .rf_robust_best import (
     POSITION_COLUMNS,
     TARGET,
     TYPES,
+    FIELDS,
     RobustForest,
+    neighbors,
+    recover,
 )
 
 DEFAULT_TRAIN = Path("data/rf_robust/train_407.csv")
+DEFAULT_MEASUREMENTS = Path("data/dual/all_measurements.csv")
 DEFAULT_OUT = Path("runs/rfrobust")
 DEFAULT_TEST = Path("data/organizers/test.csv")
 
@@ -252,6 +256,48 @@ def _descriptors(molecule) -> dict:
     return values
 
 
+def build_source_records(path: Path = DEFAULT_MEASUREMENTS) -> pd.DataFrame:
+    """Build SI+condition records from the combined measurement table."""
+    columns = [GROUP, TARGET, "culture_clean", "strain_clean", "reference"]
+    if not path.exists():
+        return pd.DataFrame(columns=columns)
+    frame = pd.read_csv(path)
+    frame["dropped_reason"] = frame["dropped_reason"].fillna("").astype(str)
+    frame["relation"] = frame["relation"].fillna("=").astype(str)
+    frame["endpoint"] = frame["endpoint"].astype(str).str.lower()
+    is_vacv = frame["is_vacv"].astype(str).str.lower().isin(["true", "1"])
+    frame = frame[
+        frame["endpoint"].eq("si")
+        & frame["relation"].eq("=")
+        & frame["dropped_reason"].eq("")
+        & is_vacv
+    ].copy()
+    rows: list[dict] = []
+    for _, row in frame.iterrows():
+        smiles = row.get("SMILES", "")
+        molecule = Chem.MolFromSmiles(smiles) if isinstance(smiles, str) else None
+        if molecule is None:
+            continue
+        value = pd.to_numeric(row.get("value_um"), errors="coerce")
+        if pd.isna(value) or value <= 0:
+            continue
+        organism = row.get("organism", "")
+        if not isinstance(organism, str) or not organism.strip():
+            organism = row.get("target_organism", "")
+        rows.append(
+            {
+                GROUP: Chem.MolToSmiles(molecule),
+                TARGET: float(value),
+                "culture_clean": clean_culture(row.get("cell_line", "")),
+                "strain_clean": clean_strain(organism),
+                "reference": f"raw:{row.get('source', '')}:{row.get('source_id', '')}",
+            }
+        )
+    if not rows:
+        return pd.DataFrame(columns=columns)
+    return pd.DataFrame(rows, columns=columns).drop_duplicates()
+
+
 def _feature_row(smiles: str):
     molecule = Chem.MolFromSmiles(smiles)
     if molecule is None:
@@ -376,6 +422,13 @@ def build_parser() -> argparse.ArgumentParser:
     train.add_argument(
         "--jobs", type=int, default=0, help="parallel fold workers (0 = auto)"
     )
+    train.add_argument(
+        "--neighbor-imputation",
+        action="store_true",
+        help="also fill conditions by Morgan-similarity voting",
+    )
+    train.add_argument("--neighbor-threshold", type=float, default=0.7)
+    train.add_argument("--neighbor-agreement", type=float, default=0.8)
     predict = sub.add_parser("predict")
     predict.add_argument("--model", type=Path, default=DEFAULT_OUT)
     predict.add_argument("--test", type=Path, default=DEFAULT_TEST)
@@ -393,21 +446,41 @@ def main(argv: list[str] | None = None) -> int:
         if TARGET not in frame:
             raise ValueError(f"{args.train}: missing {TARGET}")
         args.out.mkdir(parents=True, exist_ok=True)
-        model = RobustForest().fit(frame)
+        records = build_source_records()
+        frame = frame.copy()
+        if "source_row" not in frame:
+            frame["source_row"] = np.arange(len(frame)) + 1
+        restored, audit = recover(frame, records)
+        restored["culture_clean_BSC-40"] = restored["culture_clean"].eq("BSC-40")
+        if args.neighbor_imputation:
+            donors = pd.concat(
+                [records[[GROUP, *FIELDS]], restored[[GROUP, *FIELDS]]],
+                ignore_index=True,
+            ).drop_duplicates()
+            restored, neighbor_audit = neighbors(
+                restored,
+                donors,
+                threshold=args.neighbor_threshold,
+                agreement=args.neighbor_agreement,
+            )
+            audit = audit + neighbor_audit
+        model = RobustForest().fit(restored)
         joblib.dump(model, args.out / "model.joblib")
         cpu = os.cpu_count() or 1
         jobs = args.jobs or min(args.folds, cpu)
         if len(frame) < 100:
             jobs = 1
-        metrics, oof = cross_validate(frame, folds=args.folds, jobs=jobs)
+        metrics, oof = cross_validate(restored, folds=args.folds, jobs=jobs)
         (args.out / "metrics.json").write_text(
             json.dumps(metrics, indent=2), encoding="utf-8"
         )
+        pd.DataFrame(audit).to_csv(args.out / "condition_audit.csv", index=False)
         oof.to_csv(args.out / "oof.csv", index=False)
         print(
             f"{args.out}: rows={metrics['n']} "
             f"MSE={metrics['mse_si']:,.1f} RMSE={metrics['rmse_si']:,.1f} "
-            f"MAE={metrics['mae_si']:,.1f}"
+            f"MAE={metrics['mae_si']:,.1f} "
+            f"conditions_filled={len(audit)}"
         )
         return 0
 
